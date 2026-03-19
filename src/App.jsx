@@ -7,7 +7,8 @@ import {
   Flag, Bookmark, RotateCcw, Send, Sparkles, ExternalLink, Copy,
   Link, Minimize2, Maximize2, PauseCircle, ChevronUp,
   BookOpen, Hash, TrendingUp, ArrowUpDown, Filter,
-  BarChart3, GitBranch, DollarSign, Zap, PieChart, Network
+  BarChart3, GitBranch, DollarSign, Zap, PieChart, Network,
+  Library, ListChecks, Archive, FolderPlus, Pencil, Trash2, Share2, Star
 } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
@@ -323,7 +324,7 @@ function PipelinePage({nav}) {
 // PAGE 2: EXCEPTION QUEUE
 // ═══════════════════════════════════════════════════════════════
 
-function ExceptionsPage({nav}) {
+function ExceptionsPage({nav, isAdmin}) {
   const [resolved,setResolved]=useState([]);
   const [filter,setFilter]=useState("all");
   const [showR,setShowR]=useState({});
@@ -355,10 +356,12 @@ function ExceptionsPage({nav}) {
           {showR[exc.id]&&<div className="bg-slate-50 rounded-lg p-3 border border-slate-200 mt-2"><div className="flex items-center gap-2 mb-1"><span className="text-xs font-semibold text-slate-700">{showR[exc.id]}</span></div><p className="text-xs text-slate-600 leading-relaxed">{exc.votes[showR[exc.id]].r}</p></div>}</div>}
           {exc.type==="blooms"&&<><div className="grid grid-cols-2 gap-3"><div className="rounded-lg border border-violet-200 bg-violet-50/30 p-3"><p className="text-[10px] uppercase font-semibold text-violet-600 mb-1">Proposed</p><div className="flex items-center gap-2"><BB l={exc.proposed}/><CB s={exc.conf}/></div></div><div className="rounded-lg border border-slate-200 bg-slate-50 p-3"><p className="text-[10px] uppercase font-semibold text-slate-500 mb-1">Alternative</p><BB l={exc.alt}/></div></div>{exc.reason&&<div className="bg-slate-50 rounded-lg p-3 border border-slate-200"><p className="text-[10px] uppercase font-semibold text-slate-500 mb-1">Reasoning</p><p className="text-xs text-slate-600 leading-relaxed">{exc.reason}</p></div>}</>}
           <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-            <button onClick={()=>setResolved([...resolved,exc.id])} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 font-medium flex items-center gap-1.5"><CheckCircle2 size={13}/>Approve</button>
-            <button onClick={()=>setResolved([...resolved,exc.id])} className="text-xs px-3 py-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 font-medium flex items-center gap-1.5"><XCircle size={13}/>Reject</button>
-            {exc.type==="contested"&&<button className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium flex items-center gap-1.5"><RotateCcw size={13}/>Reconvene</button>}
-            <button className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 font-medium ml-auto flex items-center gap-1.5"><Bookmark size={13}/>Defer</button>
+            {isAdmin ? <>
+              <button onClick={()=>setResolved([...resolved,exc.id])} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 font-medium flex items-center gap-1.5"><CheckCircle2 size={13}/>Approve</button>
+              <button onClick={()=>setResolved([...resolved,exc.id])} className="text-xs px-3 py-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 font-medium flex items-center gap-1.5"><XCircle size={13}/>Reject</button>
+              {exc.type==="contested"&&<button className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium flex items-center gap-1.5"><RotateCcw size={13}/>Reconvene</button>}
+              <button className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 font-medium ml-auto flex items-center gap-1.5"><Bookmark size={13}/>Defer</button>
+            </> : <span className="text-[11px] text-slate-400 italic flex items-center gap-1"><Eye size={11}/>Awaiting Mapping Team review</span>}
           </div>
         </div>
       </div>);
@@ -371,7 +374,7 @@ function ExceptionsPage({nav}) {
 // PAGE 3: FINDING DETAIL (V-268078)
 // ═══════════════════════════════════════════════════════════════
 
-function FindingPage({nav}) {
+function FindingPage({nav, isAdmin}) {
   const f=ALL[0];
   const [showV,setShowV]=useState(true);
   const [showP,setShowP]=useState(false);
@@ -467,11 +470,11 @@ function FindingPage({nav}) {
           <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-2"><Brain size={13}/>Cognitive Load Distribution</h3>
           <div className="grid grid-cols-6 gap-2">{["Remember","Understand","Apply","Analyze","Evaluate","Create"].map(lv=>{const ct=detailMandates.filter(m=>m.bl===lv).length;const c=C.bl[lv];return <div key={lv} className={`text-center p-2 rounded-lg border ${ct>0?`${c.bg} border-current`:"bg-slate-50 border-slate-200"}`}><div className={`text-lg font-bold tabular-nums ${ct>0?c.text:"text-slate-300"}`}>{ct}</div><div className={`text-[10px] font-medium ${ct>0?c.text:"text-slate-400"}`}>{lv}</div></div>})}</div>
         </div>
-        {/* Provenance */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {/* Provenance — admin only */}
+        {isAdmin && <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <button onClick={() => setShowP(!showP)} className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50"><span className="text-xs font-semibold text-slate-700 flex items-center gap-2"><Activity size={13} />Pipeline Provenance</span>{showP ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}</button>
           {showP && <div className="px-4 pb-3 border-t border-slate-100 pt-3">{prov.map((p, i) => <div key={i} className="flex gap-3"><div className="flex flex-col items-center"><div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5" />{i < prov.length - 1 && <div className="w-px flex-1 bg-emerald-200 my-1" />}</div><div className="pb-2.5"><div className="flex items-center gap-2"><span className="text-[11px] font-semibold text-slate-700">{p.s}</span><span className="text-[10px] text-slate-400 font-mono">{p.ts}</span></div><p className="text-[11px] text-slate-500">{p.d}</p></div></div>)}</div>}
-        </div>
+        </div>}
       </div>
       {/* Cognitive Load dist */}
       <div className="col-span-2">
@@ -568,7 +571,7 @@ const LEX_VALIDATED = LEX.filter(l=>l.status==="validated").length;
 const LEX_CANDIDATE = LEX.filter(l=>l.status==="candidate").length;
 const LEX_CONTESTED = LEX.filter(l=>l.status==="contested").length;
 
-function LexiconPage({nav}) {
+function LexiconPage({nav, isAdmin}) {
   const [search,setSearch]=useState("");
   const [catFilter,setCatFilter]=useState("all");
   const [statusFilter,setStatusFilter]=useState("all");
@@ -621,7 +624,7 @@ function LexiconPage({nav}) {
           <div className="flex items-center gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-sm font-semibold text-slate-900 font-mono">"{l.term}"</span>
+                <span className="text-sm font-semibold text-slate-900 font-mono">{l.term}</span>
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status==="validated"&&<CheckCircle2 size={9}/>}{l.status==="contested"&&<Scale size={9}/>}{l.status==="candidate"&&<Plus size={9}/>}{l.status}</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">{l.cat}</span>
               </div>
@@ -630,7 +633,7 @@ function LexiconPage({nav}) {
             <div className="flex items-center gap-4 shrink-0">
               <div className="text-center"><div className="text-sm font-bold text-slate-700 tabular-nums">{l.freq}</div><div className="text-[9px] text-slate-400">hits</div></div>
               <div className="text-center"><div className="text-sm font-bold text-slate-700 tabular-nums">{l.stigs}</div><div className="text-[9px] text-slate-400">STIGs</div></div>
-              <div className="text-center"><div className="flex items-center gap-0.5">{votes.map(([n,v])=><div key={n} className={`w-3 h-3 rounded-full text-[6px] font-bold flex items-center justify-center ${v==="TAG"?"bg-emerald-400 text-white":"bg-red-300 text-white"}`}>{n[0]}</div>)}</div><div className="text-[9px] text-slate-400">{tagCount}/4</div></div>
+              {isAdmin && <div className="text-center"><div className="flex items-center gap-0.5">{votes.map(([n,v])=><div key={n} className={`w-3 h-3 rounded-full text-[6px] font-bold flex items-center justify-center ${v==="TAG"?"bg-emerald-400 text-white":"bg-red-300 text-white"}`}>{n[0]}</div>)}</div><div className="text-[9px] text-slate-400">{tagCount}/4</div></div>}
               <CB s={l.conf}/>
               {isExp?<ChevronDown size={14} className="text-slate-400"/>:<ChevronRight size={14} className="text-slate-400"/>}
             </div>
@@ -642,10 +645,10 @@ function LexiconPage({nav}) {
               <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Definition</p>
               <p className="text-xs text-slate-700 leading-relaxed">{l.def}</p>
             </div>
-            <div>
+            {isAdmin && <div>
               <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Council Votes</p>
               <div className="grid grid-cols-4 gap-1.5">{votes.map(([n,v])=><div key={n} className={`rounded-lg border p-2 text-center ${v==="TAG"?"border-emerald-200 bg-emerald-50/50":"border-red-200 bg-red-50/50"}`}><AA name={n} vote={v} sz="sm"/></div>)}</div>
-            </div>
+            </div>}
             <div>
               <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Properties</p>
               <div className="space-y-1.5 text-[11px]">
@@ -708,7 +711,7 @@ const CLASS_DIST = [
 ];
 const CLASS_MAX = Math.max(...CLASS_DIST.map(c => c.count));
 
-function DashboardPage({ nav }) {
+function DashboardPage({ nav, isAdmin }) {
   const sevData = [
     { label: "High (CAT I)", count: HIGH_COUNT, pct: Math.round(HIGH_COUNT / ALL.length * 100), color: "bg-red-500", ring: "ring-red-200" },
     { label: "Medium (CAT II)", count: MED_COUNT, pct: Math.round(MED_COUNT / ALL.length * 100), color: "bg-amber-500", ring: "ring-amber-200" },
@@ -738,10 +741,10 @@ function DashboardPage({ nav }) {
         <div className="flex items-center gap-2 mb-2"><Shield size={14} className="text-red-400" /><span className="text-[11px] text-slate-500 font-medium">High Severity</span></div>
         <div className="text-2xl font-bold text-red-600 tabular-nums">{HIGH_COUNT}</div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      {isAdmin && <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex items-center gap-2 mb-2"><Zap size={14} className="text-emerald-400" /><span className="text-[11px] text-slate-500 font-medium">Deterministic</span></div>
         <div className="text-2xl font-bold text-emerald-600 tabular-nums">100.0%</div>
-      </div>
+      </div>}
     </div>
 
     <div className="grid grid-cols-2 gap-5">
@@ -809,8 +812,8 @@ function DashboardPage({ nav }) {
         </div>
       </div>
 
-      {/* Processing Summary */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      {/* Processing Summary — admin only */}
+      {isAdmin && <div className="bg-white rounded-xl border border-slate-200 p-4">
         <h3 className="text-xs font-semibold text-slate-700 mb-4 flex items-center gap-2"><Cpu size={13} />Processing Summary</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b border-slate-100">
@@ -836,7 +839,7 @@ function DashboardPage({ nav }) {
             <span className="text-[11px] text-emerald-700 font-medium">All findings processed deterministically — zero LLM cost</span>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
 
     {/* Quick finding list */}
@@ -884,26 +887,327 @@ const RDF_TYPE_COLORS = {
 };
 
 // ═══════════════════════════════════════════════════════════════
+// PAGE 6: STIG LIBRARY + LISTS
+// ═══════════════════════════════════════════════════════════════
+
+const STIG_CATALOG = [
+  { id: "stig-001", name: "Anduril NixOS STIG", product: "Anduril NixOS", type: "Operating System", version: "V1R1", release: "2025-09-15", findings: 104, status: "ingested", severity: { high: 11, medium: 92, low: 1 }, publisher: "Anduril Industries" },
+  { id: "stig-002", name: "Windows Server 2022 STIG", product: "Microsoft Windows Server 2022", type: "Operating System", version: "V2R2", release: "2025-07-24", findings: 286, status: "catalog", severity: { high: 34, medium: 231, low: 21 }, publisher: "DISA" },
+  { id: "stig-003", name: "Red Hat Enterprise Linux 9 STIG", product: "RHEL 9", type: "Operating System", version: "V1R3", release: "2025-10-01", findings: 247, status: "catalog", severity: { high: 28, medium: 198, low: 21 }, publisher: "DISA" },
+  { id: "stig-004", name: "Cisco IOS XE Router STIG", product: "Cisco IOS XE", type: "Network", version: "V3R1", release: "2025-06-12", findings: 178, status: "catalog", severity: { high: 22, medium: 142, low: 14 }, publisher: "DISA" },
+  { id: "stig-005", name: "PostgreSQL 15 STIG", product: "PostgreSQL 15", type: "Database", version: "V1R1", release: "2025-08-30", findings: 89, status: "catalog", severity: { high: 8, medium: 72, low: 9 }, publisher: "DISA" },
+  { id: "stig-006", name: "Apache HTTP Server 2.4 STIG", product: "Apache 2.4", type: "Application", version: "V3R2", release: "2025-05-18", findings: 63, status: "catalog", severity: { high: 5, medium: 51, low: 7 }, publisher: "DISA" },
+  { id: "stig-007", name: "Kubernetes STIG", product: "Kubernetes", type: "Container Platform", version: "V2R1", release: "2025-11-05", findings: 91, status: "catalog", severity: { high: 12, medium: 69, low: 10 }, publisher: "DISA" },
+  { id: "stig-008", name: "AWS Foundations STIG", product: "Amazon Web Services", type: "Cloud", version: "V1R4", release: "2025-09-22", findings: 134, status: "catalog", severity: { high: 18, medium: 102, low: 14 }, publisher: "DISA" },
+];
+
+const STIG_TYPES = [...new Set(STIG_CATALOG.map(s => s.type))].sort();
+
+const DEFAULT_LISTS = [
+  { id: "list-001", name: "FedRAMP High Baseline", description: "STIGs required for FedRAMP High authorization boundary", created: "2025-10-01", stigs: ["stig-001", "stig-002", "stig-003"], archived: false, shared: true },
+  { id: "list-002", name: "Q1 2026 Remediation Sprint", description: "Priority STIGs for Q1 remediation cycle", created: "2025-12-15", stigs: ["stig-001"], archived: false, shared: false },
+];
+
+function LibraryPage({ nav, isAdmin }) {
+  const [view, setView] = useState("my");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [lists, setLists] = useState(DEFAULT_LISTS);
+  const [showCreateList, setShowCreateList] = useState(false);
+  const [newListName, setNewListName] = useState("");
+  const [newListDesc, setNewListDesc] = useState("");
+  const [selectedStigs, setSelectedStigs] = useState([]);
+  const [editingList, setEditingList] = useState(null);
+  const [showListDetail, setShowListDetail] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
+
+  const ingested = STIG_CATALOG.filter(s => s.status === "ingested");
+  const catalog = STIG_CATALOG.filter(s => {
+    if (typeFilter !== "all" && s.type !== typeFilter) return false;
+    if (search && !s.name.toLowerCase().includes(search.toLowerCase()) && !s.product.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const toggleStigSelect = (id) => {
+    setSelectedStigs(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const createList = () => {
+    if (!newListName.trim()) return;
+    const nl = { id: `list-${Date.now()}`, name: newListName, description: newListDesc, created: new Date().toISOString().split("T")[0], stigs: [...selectedStigs], archived: false, shared: false };
+    setLists([...lists, nl]);
+    setNewListName("");
+    setNewListDesc("");
+    setSelectedStigs([]);
+    setShowCreateList(false);
+  };
+
+  const archiveList = (id) => {
+    setLists(lists.map(l => l.id === id ? { ...l, archived: true } : l));
+  };
+
+  const unarchiveList = (id) => {
+    setLists(lists.map(l => l.id === id ? { ...l, archived: false } : l));
+  };
+
+  const removeFromList = (listId, stigId) => {
+    setLists(lists.map(l => l.id === listId ? { ...l, stigs: l.stigs.filter(s => s !== stigId) } : l));
+  };
+
+  const addToList = (listId, stigId) => {
+    setLists(lists.map(l => l.id === listId ? { ...l, stigs: [...new Set([...l.stigs, stigId])] } : l));
+  };
+
+  const activeLists = lists.filter(l => !l.archived);
+  const archivedLists = lists.filter(l => l.archived);
+
+  const listDetail = showListDetail ? lists.find(l => l.id === showListDetail) : null;
+
+  // ── List Detail View ──
+  if (listDetail) {
+    const listStigs = listDetail.stigs.map(id => STIG_CATALOG.find(s => s.id === id)).filter(Boolean);
+    return (<div className="space-y-5">
+      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+        <button onClick={() => setShowListDetail(null)} className="hover:text-blue-600">Library</button>
+        <ChevronRight size={12} /><span className="text-slate-700 font-medium">{listDetail.name}</span>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><ListChecks size={18} />{listDetail.name}</h1>
+          <div className="flex items-center gap-2">
+            {listDetail.shared && <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium flex items-center gap-1"><Share2 size={9} />Shared</span>}
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">{listStigs.length} STIGs</span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500">{listDetail.description}</p>
+        <div className="flex items-center gap-4 text-[10px] text-slate-400 mt-2">
+          <span>Created {listDetail.created}</span>
+          <span>Total findings: {listStigs.reduce((a, s) => a + s.findings, 0)}</span>
+        </div>
+      </div>
+
+      {/* API endpoint card */}
+      <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-4">
+        <div className="flex items-center gap-2 mb-2"><Cpu size={13} className="text-indigo-500" /><span className="text-xs font-semibold text-indigo-700">API Endpoint</span></div>
+        <div className="flex items-center gap-2">
+          <code className="flex-1 text-[11px] bg-white rounded-lg border border-indigo-200 px-3 py-2 font-mono text-indigo-800">GET /api/v1/lists/{listDetail.id}/stigs</code>
+          <button className="text-xs px-2 py-1.5 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-700"><Copy size={12} /></button>
+        </div>
+        <p className="text-[10px] text-indigo-500 mt-1.5">Use this endpoint to pull this STIG list into your GRC or SecOps tools</p>
+      </div>
+
+      {/* STIGs in list */}
+      <div className="space-y-2">
+        {listStigs.map(s => (<div key={s.id} className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-sm font-semibold text-slate-900">{s.name}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-mono">{s.version}</span>
+              {s.status === "ingested" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">Ingested</span>}
+            </div>
+            <div className="flex items-center gap-3 text-[10px] text-slate-500">
+              <span>{s.type}</span><span>{s.findings} findings</span><span className="text-red-500 font-medium">{s.severity.high} high</span>
+            </div>
+          </div>
+          {s.status === "ingested" && <button onClick={() => nav("dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium flex items-center gap-1"><BarChart3 size={12} />Dashboard</button>}
+          <button onClick={() => removeFromList(listDetail.id, s.id)} className="text-xs px-2 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50"><X size={12} /></button>
+        </div>))}
+      </div>
+
+      {/* Add more STIGs */}
+      <div className="bg-white rounded-xl border border-dashed border-slate-300 p-4">
+        <p className="text-xs text-slate-500 text-center mb-2">Add STIGs from the catalog</p>
+        <div className="flex flex-wrap gap-1 justify-center">
+          {STIG_CATALOG.filter(s => !listDetail.stigs.includes(s.id)).slice(0, 4).map(s => (
+            <button key={s.id} onClick={() => addToList(listDetail.id, s.id)} className="text-[10px] px-2 py-1 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-600 flex items-center gap-1"><Plus size={10} />{s.product}</button>
+          ))}
+        </div>
+      </div>
+    </div>);
+  }
+
+  // ── Main Library View ──
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Library size={18} />STIG Library</h1>
+        <p className="text-xs text-slate-500">{STIG_CATALOG.length} benchmarks available — {ingested.length} ingested into pipeline</p>
+      </div>
+      <button onClick={() => setShowCreateList(true)} className="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 font-medium flex items-center gap-1.5"><FolderPlus size={13} />New List</button>
+    </div>
+
+    {/* View tabs */}
+    <div className="flex items-center gap-1 bg-white rounded-xl border border-slate-200 p-1">
+      {[
+        { k: "my", l: "My STIGs", i: Star, badge: ingested.length },
+        { k: "catalog", l: "STIG Catalog", i: Database, badge: STIG_CATALOG.length },
+        { k: "lists", l: "Lists", i: ListChecks, badge: activeLists.length },
+      ].map(t => <button key={t.k} onClick={() => setView(t.k)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium flex-1 justify-center transition-all ${view === t.k ? "bg-blue-50 text-blue-700 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}><t.i size={13} />{t.l}{t.badge != null && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">{t.badge}</span>}</button>)}
+    </div>
+
+    {/* ── My STIGs ── */}
+    {view === "my" && <div className="space-y-3">
+      {ingested.length === 0 && <div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Upload size={36} className="mx-auto text-slate-300 mb-2" /><h3 className="text-sm font-semibold text-slate-700">No STIGs ingested yet</h3><p className="text-xs text-slate-500 mt-1">Browse the catalog to add STIGs to your pipeline.</p></div>}
+      {ingested.map(s => (<div key={s.id} className="bg-white rounded-xl border-2 border-emerald-200 p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => nav("dashboard")}>
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <h3 className="text-sm font-semibold text-slate-900">{s.name}</h3>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-mono">{s.version}</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold flex items-center gap-1"><CheckCircle2 size={9} />Ingested</span>
+            </div>
+            <p className="text-[11px] text-slate-500">{s.product} — {s.publisher}</p>
+          </div>
+          <SP status="processing" />
+        </div>
+        <div className="grid grid-cols-4 gap-3 mt-3">
+          <div className="text-center p-2 rounded-lg bg-slate-50"><div className="text-lg font-bold text-slate-800 tabular-nums">{s.findings}</div><div className="text-[9px] text-slate-400">Findings</div></div>
+          <div className="text-center p-2 rounded-lg bg-red-50"><div className="text-lg font-bold text-red-600 tabular-nums">{s.severity.high}</div><div className="text-[9px] text-red-400">CAT I</div></div>
+          <div className="text-center p-2 rounded-lg bg-amber-50"><div className="text-lg font-bold text-amber-600 tabular-nums">{s.severity.medium}</div><div className="text-[9px] text-amber-400">CAT II</div></div>
+          <div className="text-center p-2 rounded-lg bg-blue-50"><div className="text-lg font-bold text-blue-600 tabular-nums">{s.severity.low}</div><div className="text-[9px] text-blue-400">CAT III</div></div>
+        </div>
+        <div className="flex items-center justify-between mt-3 pt-2 border-t border-emerald-100">
+          <span className="text-[10px] text-slate-400">Released {s.release}</span>
+          <span className="text-[11px] text-blue-600 font-medium flex items-center gap-1">View Dashboard <ArrowRight size={11} /></span>
+        </div>
+      </div>))}
+    </div>}
+
+    {/* ── STIG Catalog ── */}
+    {view === "catalog" && <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-xs"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search STIGs by name or product..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200" /></div>
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Types</option>{STIG_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select>
+        {selectedStigs.length > 0 && <button onClick={() => setShowCreateList(true)} className="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 font-medium flex items-center gap-1.5"><FolderPlus size={12} />Add {selectedStigs.length} to List</button>}
+        <span className="text-[11px] text-slate-400 ml-auto">{catalog.length} benchmarks</span>
+      </div>
+      {catalog.map(s => {
+        const selected = selectedStigs.includes(s.id);
+        return (<div key={s.id} className={`bg-white rounded-xl border-2 ${selected ? "border-indigo-300 bg-indigo-50/30" : "border-slate-200"} p-4 transition-all`}>
+          <div className="flex items-center gap-3">
+            <button onClick={() => toggleStigSelect(s.id)} className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${selected ? "bg-indigo-500 border-indigo-500" : "border-slate-300 hover:border-indigo-300"}`}>{selected && <CheckCircle2 size={12} className="text-white" />}</button>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-sm font-semibold text-slate-900">{s.name}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-mono">{s.version}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{s.type}</span>
+                {s.status === "ingested" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">Ingested</span>}
+              </div>
+              <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                <span>{s.publisher}</span><span>{s.findings} findings</span><span className="text-red-500 font-medium">{s.severity.high} high</span><span className="text-amber-500">{s.severity.medium} med</span><span>Released {s.release}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {s.status === "ingested" ? <button onClick={() => nav("dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><BarChart3 size={12} />View</button>
+                : <button className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium border border-blue-200 flex items-center gap-1"><Upload size={12} />Ingest</button>}
+            </div>
+          </div>
+        </div>);
+      })}
+    </div>}
+
+    {/* ── Lists ── */}
+    {view === "lists" && <div className="space-y-4">
+      {activeLists.map(l => {
+        const listStigs = l.stigs.map(id => STIG_CATALOG.find(s => s.id === id)).filter(Boolean);
+        const totalFindings = listStigs.reduce((a, s) => a + s.findings, 0);
+        return (<div key={l.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer" onClick={() => setShowListDetail(l.id)}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <ListChecks size={16} className="text-indigo-500" />
+              <h3 className="text-sm font-semibold text-slate-900">{l.name}</h3>
+              {l.shared && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium flex items-center gap-1"><Share2 size={8} />Shared</span>}
+            </div>
+            <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+              <button onClick={() => archiveList(l.id)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600"><Archive size={13} /></button>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-500 mb-2">{l.description}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            {listStigs.slice(0, 3).map(s => <span key={s.id} className="text-[10px] px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200">{s.product}</span>)}
+            {listStigs.length > 3 && <span className="text-[10px] text-slate-400">+{listStigs.length - 3} more</span>}
+          </div>
+          <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+            <div className="flex items-center gap-3 text-[10px] text-slate-400">
+              <span>{listStigs.length} STIGs</span><span>{totalFindings} total findings</span><span>Created {l.created}</span>
+            </div>
+            <span className="text-[10px] text-blue-600 font-medium flex items-center gap-1">Details <ArrowRight size={10} /></span>
+          </div>
+        </div>);
+      })}
+
+      {archivedLists.length > 0 && <div>
+        <button onClick={() => setShowArchived(!showArchived)} className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 font-medium mb-2"><Archive size={12} />{showArchived ? "Hide" : "Show"} archived ({archivedLists.length}){showArchived ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</button>
+        {showArchived && archivedLists.map(l => (<div key={l.id} className="bg-slate-50 rounded-xl border border-slate-200 p-4 opacity-60">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2"><Archive size={14} className="text-slate-400" /><span className="text-sm font-semibold text-slate-600">{l.name}</span><span className="text-[10px] text-slate-400">{l.stigs.length} STIGs</span></div>
+            <button onClick={() => unarchiveList(l.id)} className="text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-500 hover:bg-white">Restore</button>
+          </div>
+        </div>))}
+      </div>}
+
+      {activeLists.length === 0 && <div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><FolderPlus size={36} className="mx-auto text-slate-300 mb-2" /><h3 className="text-sm font-semibold text-slate-700">No lists yet</h3><p className="text-xs text-slate-500 mt-1">Create a list to organize STIGs for compliance packages, team workspaces, or API integration.</p></div>}
+    </div>}
+
+    {/* ── Create List Modal ── */}
+    {showCreateList && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowCreateList(false)}>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md p-5 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between"><h2 className="text-sm font-bold text-slate-900 flex items-center gap-2"><FolderPlus size={16} />Create New List</h2><button onClick={() => setShowCreateList(false)} className="p-1 rounded-lg hover:bg-slate-100"><X size={16} className="text-slate-400" /></button></div>
+        <div>
+          <label className="text-[11px] font-semibold text-slate-600 block mb-1">List Name</label>
+          <input type="text" value={newListName} onChange={e => setNewListName(e.target.value)} placeholder="e.g., FedRAMP High Baseline" className="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+        </div>
+        <div>
+          <label className="text-[11px] font-semibold text-slate-600 block mb-1">Description</label>
+          <input type="text" value={newListDesc} onChange={e => setNewListDesc(e.target.value)} placeholder="What is this list for?" className="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+        </div>
+        {selectedStigs.length > 0 && <div>
+          <label className="text-[11px] font-semibold text-slate-600 block mb-1">Selected STIGs ({selectedStigs.length})</label>
+          <div className="flex flex-wrap gap-1">{selectedStigs.map(id => { const s = STIG_CATALOG.find(x => x.id === id); return s ? <span key={id} className="text-[10px] px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">{s.product}</span> : null; })}</div>
+        </div>}
+        <div className="flex justify-end gap-2 pt-2">
+          <button onClick={() => setShowCreateList(false)} className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button onClick={createList} disabled={!newListName.trim()} className="text-xs px-4 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 font-medium disabled:opacity-40">Create List</button>
+        </div>
+      </div>
+    </div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
 // APP SHELL
 // ═══════════════════════════════════════════════════════════════
 
+const ROLES = { admin: "Mapping Team", user: "End User" };
+
 export default function NexusApp() {
-  const [page,setPage]=useState("dashboard");
-  const nav=[{k:"dashboard",l:"Dashboard",i:BarChart3},{k:"pipeline",l:"Pipeline",i:Activity},{k:"exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},{k:"lexicon",l:"Lexicon",i:BookOpen,badge:LEX.length},{k:"finding",l:"Finding Detail",i:FileText}];
-  return(<div className="min-h-screen bg-slate-50">
+  const [page,setPage]=useState("library");
+  const [role,setRole]=useState("admin");
+  const isAdmin = role === "admin";
+  const nav=[{k:"library",l:"Library",i:Library},{k:"dashboard",l:"Dashboard",i:BarChart3},{k:"pipeline",l:"Pipeline",i:Activity},{k:"exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},{k:"lexicon",l:"Lexicon",i:BookOpen,badge:LEX.length},{k:"finding",l:"Finding Detail",i:FileText}];
+  return (<div className="min-h-screen bg-slate-50">
     <div className="bg-white border-b border-slate-200 px-6 py-2.5">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center"><Database size={16} className="text-white"/></div><div><h1 className="text-sm font-bold text-slate-900">Nexus Platform</h1><p className="text-[10px] text-slate-500">Open Controls — Anduril NixOS STIG</p></div></div>
         <div className="flex items-center gap-1">{nav.map(n=><button key={n.k} onClick={()=>setPage(n.k)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${page===n.k?"bg-blue-50 text-blue-700":"text-slate-500 hover:bg-slate-50"}`}><n.i size={13}/>{n.l}{n.badge&&<span className="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold">{n.badge}</span>}</button>)}</div>
-        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">DC</div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setRole(role === "admin" ? "user" : "admin")} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${isAdmin ? "bg-violet-50 text-violet-700 border-violet-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
+            {isAdmin ? <Shield size={11} /> : <Eye size={11} />}
+            {ROLES[role]}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">DC</div>
+        </div>
       </div>
     </div>
+    {/* Role banner */}
+    {!isAdmin && <div className="bg-slate-100 border-b border-slate-200 px-6 py-1.5"><div className="max-w-6xl mx-auto flex items-center gap-2 text-[10px] text-slate-500"><Eye size={10} />Viewing as End User — some internal details are hidden<button onClick={() => setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
     <div className="max-w-6xl mx-auto px-6 py-6">
-      {page==="dashboard"&&<DashboardPage nav={setPage}/>}
+      {page==="library"&&<LibraryPage nav={setPage} isAdmin={isAdmin}/>}
+      {page==="dashboard"&&<DashboardPage nav={setPage} isAdmin={isAdmin}/>}
       {page==="pipeline"&&<PipelinePage nav={setPage}/>}
-      {page==="exceptions"&&<ExceptionsPage nav={setPage}/>}
-      {page==="lexicon"&&<LexiconPage nav={setPage}/>}
-      {page==="finding"&&<FindingPage nav={setPage}/>}
+      {page==="exceptions"&&<ExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
+      {page==="lexicon"&&<LexiconPage nav={setPage} isAdmin={isAdmin}/>}
+      {page==="finding"&&<FindingPage nav={setPage} isAdmin={isAdmin}/>}
     </div>
   </div>);
 }
