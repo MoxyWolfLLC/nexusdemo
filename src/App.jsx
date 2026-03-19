@@ -5,7 +5,8 @@ import {
   Search, ArrowRight, ThumbsUp, Eye, Tag, Layers, Activity, Database,
   Globe, Cpu, Upload, FolderOpen, RefreshCcw, Plus, X, Scale,
   Flag, Bookmark, RotateCcw, Send, Sparkles, ExternalLink, Copy,
-  Link, Minimize2, Maximize2, PauseCircle, ChevronUp
+  Link, Minimize2, Maximize2, PauseCircle, ChevronUp,
+  BookOpen, Hash, TrendingUp, ArrowUpDown, Filter
 } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
@@ -439,12 +440,166 @@ function FindingPage({nav}) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// PAGE 4: LEXICON BROWSER
+// ═══════════════════════════════════════════════════════════════
+
+const LEX = [
+  {id:"lex-001",term:"audit record",status:"validated",pass1:true,pass2:true,freq:67,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Audit & Logging",def:"A chronological record of system activities sufficient to enable reconstruction, review, and examination of the sequence of events surrounding or leading to an operation, procedure, or event.",related:["audit log","audit daemon","audit trail preservation"],cciRefs:["CCI-000130","CCI-000131","CCI-000132"]},
+  {id:"lex-002",term:"audit daemon",status:"validated",pass1:true,pass2:true,freq:42,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Audit & Logging",def:"The background process (auditd) responsible for writing audit records to disk. Critical for maintaining continuous audit coverage per DISA STIG requirements.",related:["audit record","audit log"],cciRefs:["CCI-000135","CCI-000136"]},
+  {id:"lex-003",term:"access control",status:"validated",pass1:true,pass2:true,freq:89,stigs:6,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.88,cat:"Access Management",def:"The process of granting or denying specific requests to obtain and use information and related information processing services.",related:["privileged account","authentication mechanism","account lockout"],cciRefs:["CCI-000213","CCI-000764"]},
+  {id:"lex-004",term:"remote access",status:"validated",pass1:true,pass2:true,freq:34,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Network Security",def:"Access to DOD nonpublic information systems by an authorized user communicating through an external, non-organization-controlled network.",related:["remote access functionality","DOD-approved encryption"],cciRefs:["CCI-001453","CCI-002418"]},
+  {id:"lex-005",term:"information system",status:"validated",pass1:true,pass2:false,freq:112,stigs:8,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.82,cat:"General",def:"A discrete set of information resources organized for the collection, processing, maintenance, use, sharing, dissemination, or disposition of information. Per NIST SP 800-18.",related:["organizational information systems"],cciRefs:["CCI-000366"]},
+  {id:"lex-006",term:"cryptographic module",status:"validated",pass1:true,pass2:true,freq:28,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"The set of hardware, software, and/or firmware that implements approved security functions and is contained within the cryptographic boundary. Validated through FIPS 140-2/140-3.",related:["DOD-approved encryption","FIPS-validated cryptography","disk encryption"],cciRefs:["CCI-002450","CCI-002476"]},
+  {id:"lex-007",term:"kernel module",status:"validated",pass1:true,pass2:true,freq:18,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Dynamically loadable code that extends kernel functionality without reboot. Loading/unloading monitored via init_module, finit_module, and delete_module syscalls.",related:["kernel module loading","system call"],cciRefs:["CCI-000172"]},
+  {id:"lex-008",term:"authentication mechanism",status:"validated",pass1:true,pass2:true,freq:31,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.86,cat:"Access Management",def:"The method used to verify the identity of a user, process, or device as a prerequisite to allowing access to resources in an information system.",related:["account lockout","password complexity","privileged account"],cciRefs:["CCI-000765","CCI-000766"]},
+  {id:"lex-009",term:"account lockout",status:"validated",pass1:true,pass2:true,freq:22,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.93,cat:"Access Management",def:"Security mechanism that disables a user account after a specified number of consecutive failed authentication attempts within a defined time window.",related:["consecutive invalid login attempts","authentication mechanism"],cciRefs:["CCI-000044","CCI-002238"]},
+  {id:"lex-010",term:"password complexity",status:"validated",pass1:true,pass2:false,freq:26,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.84,cat:"Access Management",def:"The measure of effectiveness of a password in resisting attempts at guessing and brute-force attacks based on character composition requirements.",related:["authentication mechanism"],cciRefs:["CCI-000192","CCI-000193","CCI-000194"]},
+  {id:"lex-011",term:"session lock",status:"validated",pass1:true,pass2:true,freq:19,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Access Management",def:"A temporary action that prevents further access to the system by blanking the display or other mechanism while preserving the user session state.",related:["remote access"],cciRefs:["CCI-000056","CCI-000058"]},
+  {id:"lex-012",term:"system call",status:"validated",pass1:true,pass2:true,freq:53,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.81,cat:"Audit & Logging",def:"The programmatic way a process requests service from the kernel. Specific syscalls (open, chmod, chown, etc.) must be audited per STIG requirements.",related:["audit record","kernel module"],cciRefs:["CCI-000172","CCI-000130"]},
+  {id:"lex-013",term:"privileged account",status:"validated",pass1:true,pass2:true,freq:15,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Access Management",def:"An information system account with authorizations of a privileged user — elevated rights that can affect system security posture.",related:["access control","authentication mechanism"],cciRefs:["CCI-000015","CCI-000764"]},
+  {id:"lex-014",term:"network firewall",status:"validated",pass1:true,pass2:true,freq:12,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Network Security",def:"A device or software that monitors and filters incoming and outgoing network traffic based on an organization's previously established security policies.",related:["firewall rules","remote access"],cciRefs:["CCI-002314","CCI-000382"]},
+  {id:"lex-015",term:"disk encryption",status:"validated",pass1:true,pass2:false,freq:8,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.87,cat:"Cryptography",def:"Cryptographic protection of data stored on secondary storage devices to prevent unauthorized access to information at rest.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002476"]},
+  {id:"lex-016",term:"file integrity",status:"validated",pass1:true,pass2:true,freq:14,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Verification that files have not been tampered with by comparing current state against known-good baselines using cryptographic hashes.",related:["audit record","configuration baseline"],cciRefs:["CCI-001744","CCI-002702"]},
+  {id:"lex-017",term:"audit log",status:"validated",pass1:true,pass2:true,freq:38,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.85,cat:"Audit & Logging",def:"The persistent storage of audit records, typically files written by the audit daemon. Must be protected from unauthorized modification or deletion.",related:["audit record","audit daemon"],cciRefs:["CCI-000162","CCI-000163"]},
+  {id:"lex-018",term:"certificate validation",status:"validated",pass1:true,pass2:false,freq:9,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.92,cat:"Cryptography",def:"The process of verifying digital certificate authenticity, revocation status, and trust chain to a recognized Certificate Authority.",related:["cryptographic module"],cciRefs:["CCI-002470"]},
+  {id:"lex-019",term:"kernel module loading",status:"candidate",pass1:true,pass2:false,freq:6,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.78,cat:"System Integrity",def:"The mechanism of dynamically inserting code into the running kernel via init_module or finit_module syscalls. Candidate — under council review.",related:["kernel module","system call"],cciRefs:["CCI-000172"]},
+  {id:"lex-020",term:"consecutive invalid login attempts",status:"contested",pass1:true,pass2:false,freq:11,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.58,cat:"Access Management",def:"A sequence of failed authentication events by the same user without an intervening success. Council split 2-2 on whether this is compositional or a policy-specific MWE.",related:["account lockout","authentication mechanism"],cciRefs:["CCI-000044"]},
+  {id:"lex-021",term:"DOD-approved encryption",status:"contested",pass1:false,pass2:true,freq:14,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.62,cat:"Cryptography",def:"Encryption using cryptographic algorithms validated through the FIPS 140 process and approved by NSA for DOD use. Council split 2-2 on compositional vs. regulatory MWE.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002418","CCI-002421"]},
+  {id:"lex-022",term:"emergency account",status:"candidate",pass1:false,pass2:false,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.52,cat:"Access Management",def:"A temporary user account created under exigent circumstances with a mandatory 72-hour expiration. Candidate term — low frequency, unclear MWE boundary.",related:["privileged account"],cciRefs:["CCI-000016"]},
+  {id:"lex-023",term:"configuration baseline",status:"candidate",pass1:false,pass2:true,freq:7,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.55,cat:"System Integrity",def:"A documented set of specifications for an information system that has been formally reviewed and agreed upon as the basis for further development or change. Candidate — council split.",related:["file integrity"],cciRefs:["CCI-000366"]},
+  {id:"lex-024",term:"remote access functionality",status:"candidate",pass1:false,pass2:true,freq:5,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.74,cat:"Network Security",def:"The set of capabilities enabling users to access systems from external networks. Candidate — may be superset of 'remote access' MWE.",related:["remote access","automatic disconnect capability"],cciRefs:["CCI-001453"]},
+  {id:"lex-025",term:"automatic disconnect capability",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.48,cat:"Network Security",def:"The ability to terminate remote sessions without manual intervention based on policy triggers (time, threat detection). Low frequency — under review.",related:["remote access functionality","remote access"],cciRefs:["CCI-002361"]},
+  {id:"lex-026",term:"indicators of compromise",status:"validated",pass1:true,pass2:true,freq:16,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Threat Detection",def:"Artifacts observed on a network or in an operating system that indicate a computer intrusion with high confidence. Well-established security term (IoCs).",related:["adverse information"],cciRefs:["CCI-002361","CCI-002684"]},
+  {id:"lex-027",term:"firewall rules",status:"validated",pass1:true,pass2:true,freq:10,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"Network Security",def:"The set of conditions and actions that determine how network traffic is filtered — defined declaratively in NixOS via configuration.nix.",related:["network firewall","NixOS declarative configuration"],cciRefs:["CCI-000382"]},
+  {id:"lex-028",term:"NixOS built-in firewall",status:"candidate",pass1:false,pass2:true,freq:2,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.54,cat:"Network Security",def:"The iptables/nftables-based firewall managed declaratively through networking.firewall.enable in NixOS. Platform-specific term — under review.",related:["network firewall","firewall rules","NixOS declarative configuration"],cciRefs:["CCI-002314"]},
+  {id:"lex-029",term:"NixOS declarative configuration",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"NO_TAG",David:"TAG"},conf:0.46,cat:"System Integrity",def:"The functional configuration model used by NixOS where system state is defined in /etc/nixos/configuration.nix. Platform-specific — may not generalize.",related:["configuration baseline","NixOS built-in firewall"],cciRefs:["CCI-000366"]},
+  {id:"lex-030",term:"mission functions",status:"candidate",pass1:false,pass2:true,freq:8,stigs:3,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.38,cat:"General",def:"Organizational operations essential to achieving the mission objective. Very broad term — likely compositional rather than MWE.",related:["organizational information systems"],cciRefs:["CCI-000366"]},
+  {id:"lex-031",term:"organizational information systems",status:"validated",pass1:true,pass2:true,freq:21,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"General",def:"Information systems operated by an organization or on behalf of an organization, including those operated by contractors. Regulatory term of art.",related:["information system","mission functions"],cciRefs:["CCI-000366"]},
+  {id:"lex-032",term:"adverse information",status:"candidate",pass1:false,pass2:true,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.49,cat:"Threat Detection",def:"Information that adversely reflects on the integrity or character of a cleared individual, or data suggesting hostile activity. Under review.",related:["indicators of compromise"],cciRefs:["CCI-002361"]},
+  {id:"lex-033",term:"operating system",status:"validated",pass1:true,pass2:true,freq:98,stigs:8,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.99,cat:"General",def:"System software that manages computer hardware and software resources and provides common services for computer programs.",related:["information system"],cciRefs:["CCI-000366"]},
+  {id:"lex-034",term:"privilege escalation",status:"candidate",pass1:false,pass2:false,freq:7,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.76,cat:"Access Management",def:"The exploitation of a programming error, design flaw, or configuration oversight to gain elevated access to resources normally protected from a user.",related:["privileged account","access control"],cciRefs:["CCI-000015"]},
+  {id:"lex-035",term:"execution control policy",status:"candidate",pass1:false,pass2:false,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.32,cat:"System Integrity",def:"Organizational policy governing which binaries and scripts may execute on a system. Low consensus — likely compositional.",related:["configuration baseline"],cciRefs:["CCI-001774"]},
+  {id:"lex-036",term:"audit trail preservation",status:"candidate",pass1:false,pass2:false,freq:5,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.51,cat:"Audit & Logging",def:"The protection of audit records from unauthorized alteration, deletion, or overwriting. Council split — may overlap with 'audit log' protection.",related:["audit log","audit record"],cciRefs:["CCI-000162","CCI-000163"]},
+  {id:"lex-037",term:"FIPS-validated cryptography",status:"validated",pass1:true,pass2:true,freq:19,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"Cryptographic modules that have been tested and validated against FIPS 140-2 or FIPS 140-3 standards by an accredited Cryptographic Module Testing Laboratory.",related:["cryptographic module","DOD-approved encryption"],cciRefs:["CCI-002450"]},
+];
+
+const LEX_CATS = [...new Set(LEX.map(l=>l.cat))].sort();
+const LEX_VALIDATED = LEX.filter(l=>l.status==="validated").length;
+const LEX_CANDIDATE = LEX.filter(l=>l.status==="candidate").length;
+const LEX_CONTESTED = LEX.filter(l=>l.status==="contested").length;
+
+function LexiconPage({nav}) {
+  const [search,setSearch]=useState("");
+  const [catFilter,setCatFilter]=useState("all");
+  const [statusFilter,setStatusFilter]=useState("all");
+  const [sort,setSort]=useState("freq");
+  const [expanded,setExpanded]=useState(null);
+
+  const filtered=useMemo(()=>{
+    let r=LEX.filter(l=>{
+      if(catFilter!=="all"&&l.cat!==catFilter) return false;
+      if(statusFilter!=="all"&&l.status!==statusFilter) return false;
+      if(search&&!l.term.toLowerCase().includes(search.toLowerCase())&&!l.def.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+    if(sort==="freq") r.sort((a,b)=>b.freq-a.freq);
+    else if(sort==="conf") r.sort((a,b)=>b.conf-a.conf);
+    else if(sort==="alpha") r.sort((a,b)=>a.term.localeCompare(b.term));
+    else if(sort==="stigs") r.sort((a,b)=>b.stigs-a.stigs);
+    return r;
+  },[search,catFilter,statusFilter,sort]);
+
+  const stColor={validated:{bg:"bg-emerald-100",text:"text-emerald-700",border:"border-emerald-200"},candidate:{bg:"bg-amber-100",text:"text-amber-700",border:"border-amber-200"},contested:{bg:"bg-red-100",text:"text-red-700",border:"border-red-200"}};
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><BookOpen size={18}/>MWE Lexicon</h1><p className="text-xs text-slate-500">Multi-Word Expression dictionary — {LEX.length} terms across {LEX_CATS.length} categories</p></div>
+    </div>
+    {/* Summary cards */}
+    <div className="grid grid-cols-4 gap-3">
+      <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><BookOpen size={13} className="text-slate-400"/><span className="text-[11px] text-slate-500">Total Terms</span></div><div className="text-xl font-bold text-slate-900 tabular-nums">{LEX.length}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><CheckCircle2 size={13} className="text-emerald-500"/><span className="text-[11px] text-slate-500">Validated</span></div><div className="text-xl font-bold text-emerald-600 tabular-nums">{LEX_VALIDATED}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Plus size={13} className="text-amber-500"/><span className="text-[11px] text-slate-500">Candidates</span></div><div className="text-xl font-bold text-amber-600 tabular-nums">{LEX_CANDIDATE}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Scale size={13} className="text-red-500"/><span className="text-[11px] text-slate-500">Contested</span></div><div className="text-xl font-bold text-red-600 tabular-nums">{LEX_CONTESTED}</div></div>
+    </div>
+    {/* Filters */}
+    <div className="flex items-center gap-2 flex-wrap">
+      <div className="relative flex-1 min-w-[180px] max-w-xs"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Search terms or definitions..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+      <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Status</option><option value="validated">Validated ({LEX_VALIDATED})</option><option value="candidate">Candidate ({LEX_CANDIDATE})</option><option value="contested">Contested ({LEX_CONTESTED})</option></select>
+      <select value={catFilter} onChange={e=>setCatFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Categories</option>{LEX_CATS.map(c=><option key={c} value={c}>{c}</option>)}</select>
+      <select value={sort} onChange={e=>setSort(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="freq">Sort: Frequency</option><option value="conf">Sort: Confidence</option><option value="alpha">Sort: A-Z</option><option value="stigs">Sort: STIG Coverage</option></select>
+      <span className="text-[11px] text-slate-400 ml-auto">{filtered.length} terms</span>
+    </div>
+    {/* Term list */}
+    <div className="space-y-2">{filtered.map(l=>{
+      const sc=stColor[l.status];
+      const isExp=expanded===l.id;
+      const votes=Object.entries(l.council);
+      const tagCount=votes.filter(([,v])=>v==="TAG").length;
+      return (<div key={l.id} className={`bg-white rounded-xl border ${isExp?"border-blue-300 shadow-sm":"border-slate-200"} overflow-hidden transition-all`}>
+        <button onClick={()=>setExpanded(isExp?null:l.id)} className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-sm font-semibold text-slate-900 font-mono">"{l.term}"</span>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status==="validated"&&<CheckCircle2 size={9}/>}{l.status==="contested"&&<Scale size={9}/>}{l.status==="candidate"&&<Plus size={9}/>}{l.status}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">{l.cat}</span>
+              </div>
+              <p className="text-[11px] text-slate-500 line-clamp-1">{l.def}</p>
+            </div>
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="text-center"><div className="text-sm font-bold text-slate-700 tabular-nums">{l.freq}</div><div className="text-[9px] text-slate-400">hits</div></div>
+              <div className="text-center"><div className="text-sm font-bold text-slate-700 tabular-nums">{l.stigs}</div><div className="text-[9px] text-slate-400">STIGs</div></div>
+              <div className="text-center"><div className="flex items-center gap-0.5">{votes.map(([n,v])=><div key={n} className={`w-3 h-3 rounded-full text-[6px] font-bold flex items-center justify-center ${v==="TAG"?"bg-emerald-400 text-white":"bg-red-300 text-white"}`}>{n[0]}</div>)}</div><div className="text-[9px] text-slate-400">{tagCount}/4</div></div>
+              <CB s={l.conf}/>
+              {isExp?<ChevronDown size={14} className="text-slate-400"/>:<ChevronRight size={14} className="text-slate-400"/>}
+            </div>
+          </div>
+        </button>
+        {isExp&&<div className="px-4 pb-4 border-t border-slate-100 pt-3 space-y-3">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Definition</p>
+              <p className="text-xs text-slate-700 leading-relaxed">{l.def}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Council Votes</p>
+              <div className="grid grid-cols-4 gap-1.5">{votes.map(([n,v])=><div key={n} className={`rounded-lg border p-2 text-center ${v==="TAG"?"border-emerald-200 bg-emerald-50/50":"border-red-200 bg-red-50/50"}`}><AA name={n} vote={v} sz="sm"/></div>)}</div>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Properties</p>
+              <div className="space-y-1.5 text-[11px]">
+                <div className="flex items-center justify-between"><span className="text-slate-500">Pass 1 (raw text)</span>{l.pass1?<CheckCircle2 size={12} className="text-emerald-500"/>:<XCircle size={12} className="text-slate-300"/>}</div>
+                <div className="flex items-center justify-between"><span className="text-slate-500">Pass 2 (mandates)</span>{l.pass2?<CheckCircle2 size={12} className="text-emerald-500"/>:<XCircle size={12} className="text-slate-300"/>}</div>
+                <div className="flex items-center justify-between"><span className="text-slate-500">Frequency</span><span className="font-semibold text-slate-700">{l.freq} occurrences</span></div>
+                <div className="flex items-center justify-between"><span className="text-slate-500">STIG coverage</span><span className="font-semibold text-slate-700">{l.stigs} benchmarks</span></div>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">Related Terms</p>
+              <div className="flex flex-wrap gap-1">{l.related.map((r,i)=>{const rl=LEX.find(x=>x.term===r);return <button key={i} onClick={()=>{if(rl)setExpanded(rl.id);}} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${rl?"bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 cursor-pointer":"bg-slate-50 text-slate-500 border-slate-200"}`}><Link size={8}/>{r}</button>})}</div>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase mb-1.5">CCI References</p>
+              <div className="flex flex-wrap gap-1">{l.cciRefs.map((c,i)=><span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-600 border border-slate-200"><Hash size={8}/>{c}</span>)}</div>
+            </div>
+          </div>
+        </div>}
+      </div>);
+    })}</div>
+    {filtered.length===0&&<div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Search size={36} className="mx-auto text-slate-300 mb-2"/><h3 className="text-sm font-semibold text-slate-700">No matching terms</h3><p className="text-xs text-slate-500 mt-1">Try adjusting your filters or search query.</p></div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
 // APP SHELL
 // ═══════════════════════════════════════════════════════════════
 
 export default function NexusApp() {
   const [page,setPage]=useState("pipeline");
-  const nav=[{k:"pipeline",l:"Pipeline",i:Activity},{k:"exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},{k:"finding",l:"Finding Detail",i:FileText}];
+  const nav=[{k:"pipeline",l:"Pipeline",i:Activity},{k:"exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},{k:"lexicon",l:"Lexicon",i:BookOpen,badge:LEX.length},{k:"finding",l:"Finding Detail",i:FileText}];
   return(<div className="min-h-screen bg-slate-50">
     <div className="bg-white border-b border-slate-200 px-6 py-2.5">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -456,6 +611,7 @@ export default function NexusApp() {
     <div className="max-w-6xl mx-auto px-6 py-6">
       {page==="pipeline"&&<PipelinePage nav={setPage}/>}
       {page==="exceptions"&&<ExceptionsPage nav={setPage}/>}
+      {page==="lexicon"&&<LexiconPage nav={setPage}/>}
       {page==="finding"&&<FindingPage nav={setPage}/>}
     </div>
   </div>);
