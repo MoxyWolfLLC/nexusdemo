@@ -9,7 +9,8 @@ import {
   BookOpen, Hash, TrendingUp, ArrowUpDown, Filter,
   BarChart3, GitBranch, DollarSign, Zap, PieChart, Network,
   Library, ListChecks, Archive, FolderPlus, Pencil, Trash2, Share2, Star,
-  Users, Briefcase, Target, Crosshair, MapPin, Menu, Sidebar
+  Users, Briefcase, Target, Crosshair, MapPin, Menu, Sidebar,
+  UserCheck, ClipboardCheck, ShieldCheck, LinkIcon, Unlink
 } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
@@ -375,12 +376,13 @@ function ExceptionsPage({nav, isAdmin}) {
 // PAGE 3: FINDING DETAIL (V-268078)
 // ═══════════════════════════════════════════════════════════════
 
-function FindingPage({nav, isAdmin}) {
+function FindingPage({nav, isAdmin, isAuditor, role}) {
   const f=ALL[0];
   const [showV,setShowV]=useState(true);
   const [showP,setShowP]=useState(false);
   const [ci,setCi]=useState("");
   const [detailTab,setDetailTab]=useState("overview");
+  const findingMappings=STIG_ONET_MAPPINGS.filter(m=>m.stigFinding===f.id);
 
   const prov=[
     {s:"RAG Ingest",ts:"09:14:00",d:"Ingested Anduril NixOS STIG V1 into vector store, 312 chunks across 104 findings"},
@@ -413,6 +415,7 @@ function FindingPage({nav, isAdmin}) {
         { k: "overview", l: "Overview", i: FileText },
         { k: "mandates", l: `Mandate Analysis ${detailMandates.length}`, i: Layers },
         { k: "rdf", l: `RDF Graph ${RDF_TRIPLES.length}`, i: Network },
+        { k: "mappings", l: `Role Mappings ${findingMappings.length}`, i: Users },
         { k: "ai", l: "AI Assistant", i: Sparkles },
       ].map(t => <button key={t.k} onClick={() => setDetailTab(t.k)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium flex-1 justify-center transition-all ${detailTab === t.k ? "bg-blue-50 text-blue-700 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}><t.i size={13} />{t.l}</button>)}
     </div>
@@ -505,6 +508,50 @@ function FindingPage({nav, isAdmin}) {
         <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-2"><Brain size={13} />Cognitive Load Distribution</h3>
         <div className="grid grid-cols-6 gap-2">{["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"].map(lv => { const ct = detailMandates.filter(m => m.bl === lv).length; const c = C.bl[lv]; return <div key={lv} className={`text-center p-2 rounded-lg border ${ct > 0 ? `${c.bg} border-current` : "bg-slate-50 border-slate-200"}`}><div className={`text-lg font-bold tabular-nums ${ct > 0 ? c.text : "text-slate-300"}`}>{ct}</div><div className={`text-[10px] font-medium ${ct > 0 ? c.text : "text-slate-400"}`}>{lv}</div></div> })}</div>
       </div>
+    </div>}
+
+    {/* ════════ ROLE MAPPINGS TAB ════════ */}
+    {detailTab === "mappings" && <div className="space-y-4">
+      <div className="grid grid-cols-4 gap-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Users size={13} className="text-slate-400"/><span className="text-[11px] text-slate-500">Total Mappings</span></div><div className="text-xl font-bold text-slate-900 tabular-nums">{findingMappings.length}</div></div>
+        <div className="bg-white rounded-xl border border-amber-200 p-3"><div className="flex items-center gap-2 mb-1"><Zap size={13} className="text-amber-400"/><span className="text-[11px] text-slate-500">Suggested</span></div><div className="text-xl font-bold text-amber-600 tabular-nums">{findingMappings.filter(m=>m.status==="suggested").length}</div></div>
+        <div className="bg-white rounded-xl border border-blue-200 p-3"><div className="flex items-center gap-2 mb-1"><CheckCircle2 size={13} className="text-blue-400"/><span className="text-[11px] text-slate-500">Team Approved</span></div><div className="text-xl font-bold text-blue-600 tabular-nums">{findingMappings.filter(m=>m.status==="team_approved").length}</div></div>
+        <div className="bg-white rounded-xl border border-emerald-200 p-3"><div className="flex items-center gap-2 mb-1"><ShieldCheck size={13} className="text-emerald-400"/><span className="text-[11px] text-slate-500">Auditor Validated</span></div><div className="text-xl font-bold text-emerald-600 tabular-nums">{findingMappings.filter(m=>m.status==="auditor_validated").length}</div></div>
+      </div>
+      <p className="text-xs text-slate-500">O*Net tasks and work activities mapped to this finding through shared MWE terms. Lifecycle: Auto-Suggested → Team Approved → Auditor Validated.</p>
+      <div className="space-y-3">{findingMappings.filter(m=>m.status!=="team_rejected").map(m=>{
+        const st=MAPPING_STATUS[m.status];
+        return(<div key={m.id} className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${st.color}`}>{st.icon} {st.label}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-700 border border-cyan-200 font-mono">{m.onetOccupation}</span>
+              <span className="text-[11px] text-slate-600 font-medium">{m.onetRole}</span>
+            </div>
+            <CB s={m.confidence}/>
+          </div>
+          <div className="flex items-center gap-2 mb-2"><span className="text-[10px] text-slate-400 uppercase font-semibold w-16">{m.onetTask?"Task":"Activity"}</span><span className="text-xs text-slate-700">{m.onetTaskText}</span></div>
+          <div className="flex items-center gap-1.5 mb-2"><span className="text-[10px] text-slate-400">Bridge terms:</span>{m.bridgeTerms.map((bt,i)=><span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono">{bt}</span>)}</div>
+          <div className="flex items-center gap-3 text-[10px] text-slate-400">
+            {m.teamReviewedBy&&<span>Team: {m.teamReviewedBy} ({m.teamReviewedAt})</span>}
+            {m.auditorValidatedBy&&<span className="text-emerald-600">Auditor: {m.auditorValidatedBy} ({m.auditorValidatedAt})</span>}
+          </div>
+          {/* Role-based actions */}
+          {isAdmin&&m.status==="suggested"&&<div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium border border-blue-200 flex items-center gap-1"><ThumbsUp size={11}/>Approve</button>
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-medium border border-red-200 flex items-center gap-1"><XCircle size={11}/>Reject</button>
+          </div>}
+          {isAuditor&&m.status==="team_approved"&&<div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><ShieldCheck size={11}/>Validate</button>
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 font-medium border border-orange-200 flex items-center gap-1"><AlertTriangle size={11}/>Dispute</button>
+            <span className="text-[10px] text-slate-400 ml-2 italic">Optional — validate at your discretion</span>
+          </div>}
+        </div>);
+      })}</div>
+      {findingMappings.filter(m=>m.status==="team_rejected").length>0&&<div className="bg-slate-50 rounded-xl border border-slate-200 p-3">
+        <p className="text-[10px] text-slate-400 font-medium mb-1">Rejected ({findingMappings.filter(m=>m.status==="team_rejected").length})</p>
+        {findingMappings.filter(m=>m.status==="team_rejected").map(m=><div key={m.id} className="flex items-center gap-2 text-[10px] text-slate-400 py-1 opacity-60"><XCircle size={10}/><span className="font-mono">{m.onetOccupation}</span><span>{m.onetTaskText}</span><span>— rejected by {m.teamReviewedBy}</span></div>)}
+      </div>}
     </div>}
 
     {detailTab === "ai" && <div className="max-w-2xl mx-auto">
@@ -1606,13 +1653,63 @@ const ONET_EXC = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// O*NET PAGE 1: LIBRARY
+// STIG ↔ O*NET MAPPING DATA
+// Three-tier lifecycle: suggested → team_approved → auditor_validated
 // ═══════════════════════════════════════════════════════════════
 
-function OnetLibraryPage({nav, isAdmin}) {
+const MAPPING_STATUS = {
+  suggested:{label:"Auto-Suggested",color:"bg-amber-100 text-amber-700 border-amber-200",icon:"⚡"},
+  team_approved:{label:"Team Approved",color:"bg-blue-100 text-blue-700 border-blue-200",icon:"✓"},
+  team_rejected:{label:"Team Rejected",color:"bg-red-100 text-red-500 border-red-200",icon:"✗"},
+  auditor_validated:{label:"Auditor Validated",color:"bg-emerald-100 text-emerald-700 border-emerald-200",icon:"✔✔"},
+  auditor_disputed:{label:"Auditor Disputed",color:"bg-orange-100 text-orange-700 border-orange-200",icon:"⚠"},
+};
+
+const STIG_ONET_MAPPINGS = [
+  // Auto-suggested mappings (from term overlap)
+  {id:"map-001",stigFinding:"V-268078",stigTitle:"NixOS must use DOD-approved encryption for SSH",onetTask:"t1",onetTaskText:"Monitor computer networks for security issues",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["network firewall","remote access"],confidence:0.89,status:"team_approved",teamReviewedBy:"Alice",teamReviewedAt:"2025-03-12",auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-002",stigFinding:"V-268078",stigTitle:"NixOS must use DOD-approved encryption for SSH",onetTask:"t2",onetTaskText:"Assess current security measures and identify vulnerabilities",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["cryptographic module","configuration baseline"],confidence:0.84,status:"auditor_validated",teamReviewedBy:"Bob",teamReviewedAt:"2025-03-11",auditorValidatedBy:"J. Torres (ISSM)",auditorValidatedAt:"2025-03-15"},
+  {id:"map-003",stigFinding:"V-268078",stigTitle:"NixOS must use DOD-approved encryption for SSH",onetTask:"t4",onetTaskText:"Investigate security alerts and provide incident response",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["remote access","indicators of compromise"],confidence:0.78,status:"suggested",teamReviewedBy:null,teamReviewedAt:null,auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-004",stigFinding:"V-268080",stigTitle:"NixOS must audit all account modifications",onetTask:"t2",onetTaskText:"Assess current security measures and identify vulnerabilities",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["audit record","access control"],confidence:0.92,status:"team_approved",teamReviewedBy:"Clara",teamReviewedAt:"2025-03-13",auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-005",stigFinding:"V-268080",stigTitle:"NixOS must audit all account modifications",onetActivity:"wa2",onetTaskText:"Analyzing Data or Information",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["audit record","audit log"],confidence:0.86,status:"auditor_validated",teamReviewedBy:"Alice",teamReviewedAt:"2025-03-10",auditorValidatedBy:"J. Torres (ISSM)",auditorValidatedAt:"2025-03-14"},
+  {id:"map-006",stigFinding:"V-268081",stigTitle:"NixOS must enforce session lock after 15 minutes",onetTask:"t5",onetTaskText:"Develop security standards and best practices for the organization",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["session lock","access control"],confidence:0.81,status:"suggested",teamReviewedBy:null,teamReviewedAt:null,auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-007",stigFinding:"V-268078",stigTitle:"NixOS must use DOD-approved encryption for SSH",onetTask:"t1",onetTaskText:"Maintain and administer computer networks and related computing environments",onetOccupation:"15-1231.00",onetRole:"Computer Network Support Specialists",bridgeTerms:["network firewall","remote access"],confidence:0.74,status:"team_approved",teamReviewedBy:"David",teamReviewedAt:"2025-03-14",auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-008",stigFinding:"V-268082",stigTitle:"NixOS must implement kernel module signing",onetTask:"t6",onetTaskText:"Perform risk assessments and execute tests against secured environments",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["kernel module","privilege escalation","file integrity"],confidence:0.88,status:"team_approved",teamReviewedBy:"Alice",teamReviewedAt:"2025-03-15",auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-009",stigFinding:"V-268083",stigTitle:"NixOS must disable unnecessary services",onetActivity:"wa4",onetTaskText:"Updating and Using Relevant Knowledge",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["system call","daemon process"],confidence:0.62,status:"team_rejected",teamReviewedBy:"Bob",teamReviewedAt:"2025-03-13",auditorValidatedBy:null,auditorValidatedAt:null},
+  {id:"map-010",stigFinding:"V-268084",stigTitle:"NixOS must configure audit log retention",onetTask:"t2",onetTaskText:"Assess current security measures and identify vulnerabilities",onetOccupation:"15-1212.00",onetRole:"Information Security Analysts",bridgeTerms:["audit record","audit trail preservation"],confidence:0.91,status:"suggested",teamReviewedBy:null,teamReviewedAt:null,auditorValidatedBy:null,auditorValidatedAt:null},
+];
+
+const MAPPING_COUNTS = {
+  total: STIG_ONET_MAPPINGS.length,
+  suggested: STIG_ONET_MAPPINGS.filter(m=>m.status==="suggested").length,
+  team_approved: STIG_ONET_MAPPINGS.filter(m=>m.status==="team_approved").length,
+  auditor_validated: STIG_ONET_MAPPINGS.filter(m=>m.status==="auditor_validated").length,
+  team_rejected: STIG_ONET_MAPPINGS.filter(m=>m.status==="team_rejected").length,
+  auditor_disputed: STIG_ONET_MAPPINGS.filter(m=>m.status==="auditor_disputed").length,
+};
+
+// O*Net Role Collections (parallel to STIG Lists)
+const DEFAULT_ROLE_COLLECTIONS = [
+  {id:"rc-1",name:"SOC Team Roles",description:"Occupations mapped to our Security Operations Center staffing plan.",created:"2025-03-01",roles:["15-1212.00","15-1231.00"],archived:false,shared:true},
+  {id:"rc-2",name:"GRC Analyst Track",description:"Roles aligned with Governance, Risk, and Compliance career progression.",created:"2025-03-05",roles:["15-1212.00","13-1111.00"],archived:false,shared:false},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 1: LIBRARY (with Role Collections)
+// ═══════════════════════════════════════════════════════════════
+
+function OnetLibraryPage({nav, isAdmin, isAuditor, role}) {
   const [view,setView]=useState("my");
   const [search,setSearch]=useState("");
   const [catFilter,setCatFilter]=useState("all");
+  const [collections,setCollections]=useState(DEFAULT_ROLE_COLLECTIONS);
+  const [showCreate,setShowCreate]=useState(false);
+  const [newName,setNewName]=useState("");
+  const [newDesc,setNewDesc]=useState("");
+  const [selectedRoles,setSelectedRoles]=useState([]);
+  const [showCollDetail,setShowCollDetail]=useState(null);
+  const [showArchived,setShowArchived]=useState(false);
+
   const cats=[...new Set(ONET_CATALOG.map(o=>o.category))].sort();
   const filtered=useMemo(()=>{
     return ONET_CATALOG.filter(o=>{
@@ -1623,10 +1720,95 @@ function OnetLibraryPage({nav, isAdmin}) {
     });
   },[view,search,catFilter]);
 
+  const toggleRoleSelect=(id)=>setSelectedRoles(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);
+  const createCollection=()=>{if(!newName.trim())return;const nc={id:`rc-${Date.now()}`,name:newName,description:newDesc,created:new Date().toISOString().split("T")[0],roles:[...selectedRoles],archived:false,shared:false};setCollections([...collections,nc]);setNewName("");setNewDesc("");setSelectedRoles([]);setShowCreate(false);};
+  const archiveCollection=(id)=>setCollections(collections.map(c=>c.id===id?{...c,archived:true}:c));
+  const unarchiveCollection=(id)=>setCollections(collections.map(c=>c.id===id?{...c,archived:false}:c));
+  const removeFromCollection=(collId,roleId)=>setCollections(collections.map(c=>c.id===collId?{...c,roles:c.roles.filter(r=>r!==roleId)}:c));
+  const addToCollection=(collId,roleId)=>setCollections(collections.map(c=>c.id===collId?{...c,roles:[...new Set([...c.roles,roleId])]}:c));
+
+  const activeColls=collections.filter(c=>!c.archived);
+  const archivedColls=collections.filter(c=>c.archived);
+  const collDetail=showCollDetail?collections.find(c=>c.id===showCollDetail):null;
+
+  // ── Collection Detail View ──
+  if(collDetail){
+    const collRoles=collDetail.roles.map(id=>ONET_CATALOG.find(o=>o.id===id)).filter(Boolean);
+    const totalMappings=STIG_ONET_MAPPINGS.filter(m=>collDetail.roles.includes(m.onetOccupation)).length;
+    return(<div className="space-y-5">
+      <div className="flex items-center gap-1.5 text-xs text-slate-500"><button onClick={()=>setShowCollDetail(null)} className="hover:text-blue-600">Library</button><ChevronRight size={12}/><span className="text-slate-700 font-medium">{collDetail.name}</span></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><ListChecks size={18}/>{collDetail.name}</h1>
+          <div className="flex items-center gap-2">
+            {collDetail.shared&&<span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium flex items-center gap-1"><Share2 size={9}/>Shared</span>}
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">{collRoles.length} Roles</span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500">{collDetail.description}</p>
+        <div className="flex items-center gap-4 text-[10px] text-slate-400 mt-2"><span>Created {collDetail.created}</span><span>{totalMappings} STIG mappings across these roles</span></div>
+      </div>
+      {/* API endpoint */}
+      <div className="bg-cyan-50 rounded-xl border border-cyan-200 p-4">
+        <div className="flex items-center gap-2 mb-2"><Cpu size={13} className="text-cyan-500"/><span className="text-xs font-semibold text-cyan-700">API Endpoint</span></div>
+        <div className="flex items-center gap-2"><code className="flex-1 text-[11px] bg-white rounded-lg border border-cyan-200 px-3 py-2 font-mono text-cyan-800">GET /api/v1/collections/{collDetail.id}/roles</code><button className="text-xs px-2 py-1.5 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700"><Copy size={12}/></button></div>
+        <p className="text-[10px] text-cyan-500 mt-1.5">Pull this role collection into your HR, workforce planning, or GRC tools</p>
+      </div>
+      {/* Roles in collection */}
+      <div className="space-y-2">{collRoles.map(o=>{
+        const roleMappings=STIG_ONET_MAPPINGS.filter(m=>m.onetOccupation===o.id);
+        return(<div key={o.id} className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-0.5"><span className="text-sm font-semibold text-slate-900">{o.title}</span><span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-mono">{o.id}</span>{o.status==="ingested"&&<span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">Ingested</span>}</div>
+            <div className="flex items-center gap-3 text-[10px] text-slate-500"><span>{o.category}</span><span>{o.median_salary}</span><span className="text-blue-600 font-medium">{roleMappings.length} STIG mappings</span></div>
+          </div>
+          {o.status==="ingested"&&<button onClick={()=>nav("onet-role")} className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium flex items-center gap-1"><BarChart3 size={12}/>Detail</button>}
+          <button onClick={()=>removeFromCollection(collDetail.id,o.id)} className="text-xs px-2 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50"><X size={12}/></button>
+        </div>);
+      })}</div>
+      {/* Add more roles */}
+      <div className="bg-white rounded-xl border border-dashed border-slate-300 p-4">
+        <p className="text-xs text-slate-500 text-center mb-2">Add roles from the catalog</p>
+        <div className="flex flex-wrap gap-1 justify-center">{ONET_CATALOG.filter(o=>!collDetail.roles.includes(o.id)).map(o=>(
+          <button key={o.id} onClick={()=>addToCollection(collDetail.id,o.id)} className="text-[10px] px-2 py-1 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-600 flex items-center gap-1"><Plus size={10}/>{o.title.split(" ").slice(0,3).join(" ")}</button>
+        ))}</div>
+      </div>
+    </div>);
+  }
+
+  // ── Main Library View ──
   return (<div className="space-y-5">
     <div className="flex items-center justify-between">
       <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Users size={18}/>O*Net Role Library</h1><p className="text-xs text-slate-500">{ONET_CATALOG.length} occupations — {ONET_INGESTED.length} ingested</p></div>
     </div>
+
+    {/* Role Collections */}
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2"><ListChecks size={14}/>Role Collections</h2>
+        <div className="flex items-center gap-2">
+          {archivedColls.length>0&&<button onClick={()=>setShowArchived(!showArchived)} className="text-[10px] text-slate-500 hover:text-slate-700 flex items-center gap-1"><Archive size={10}/>{showArchived?"Hide":"Show"} Archived ({archivedColls.length})</button>}
+          <button onClick={()=>setShowCreate(!showCreate)} className="text-xs px-3 py-1.5 rounded-lg bg-cyan-50 text-cyan-700 hover:bg-cyan-100 font-medium border border-cyan-200 flex items-center gap-1"><Plus size={12}/>New Collection</button>
+        </div>
+      </div>
+      {showCreate&&<div className="bg-cyan-50/50 rounded-lg border border-cyan-200 p-3 mb-3 space-y-2">
+        <input type="text" placeholder="Collection name..." value={newName} onChange={e=>setNewName(e.target.value)} className="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-200"/>
+        <input type="text" placeholder="Description..." value={newDesc} onChange={e=>setNewDesc(e.target.value)} className="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-200"/>
+        <div className="flex flex-wrap gap-1">{ONET_CATALOG.map(o=><button key={o.id} onClick={()=>toggleRoleSelect(o.id)} className={`text-[10px] px-2 py-1 rounded-lg border font-medium ${selectedRoles.includes(o.id)?"bg-cyan-100 text-cyan-700 border-cyan-300":"bg-white text-slate-500 border-slate-200 hover:bg-slate-50"}`}>{o.title.split(" ").slice(0,3).join(" ")}</button>)}</div>
+        <div className="flex items-center gap-2"><button onClick={createCollection} disabled={!newName.trim()} className="text-xs px-4 py-1.5 rounded-lg bg-cyan-500 text-white hover:bg-cyan-600 font-medium disabled:opacity-40">Create Collection</button><button onClick={()=>{setShowCreate(false);setNewName("");setNewDesc("");setSelectedRoles([]);}} className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">Cancel</button></div>
+      </div>}
+      <div className="space-y-2">{activeColls.map(c=>{const roleCount=c.roles.length;const mappingCount=STIG_ONET_MAPPINGS.filter(m=>c.roles.includes(m.onetOccupation)).length;return(
+        <div key={c.id} className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-cyan-200 hover:bg-cyan-50/30 transition-all cursor-pointer" onClick={()=>setShowCollDetail(c.id)}>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center"><ListChecks size={14} className="text-white"/></div>
+          <div className="flex-1"><div className="flex items-center gap-2"><span className="text-xs font-semibold text-slate-900">{c.name}</span>{c.shared&&<Share2 size={10} className="text-blue-400"/>}</div><p className="text-[10px] text-slate-500">{roleCount} roles • {mappingCount} STIG mappings • Created {c.created}</p></div>
+          <button onClick={e=>{e.stopPropagation();archiveCollection(c.id);}} className="text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50"><Archive size={11}/></button>
+          <ChevronRight size={14} className="text-slate-300"/>
+        </div>);
+      })}</div>
+      {showArchived&&archivedColls.length>0&&<div className="mt-2 space-y-1">{archivedColls.map(c=><div key={c.id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100 bg-slate-50/50 opacity-60"><Archive size={12} className="text-slate-400"/><span className="text-[10px] text-slate-500 flex-1">{c.name}</span><button onClick={()=>unarchiveCollection(c.id)} className="text-[10px] text-blue-600 hover:text-blue-800">Restore</button></div>)}</div>}
+    </div>
+
+    {/* Browse/Catalog */}
     <div className="flex items-center gap-2">
       <button onClick={()=>setView("my")} className={`text-xs px-3 py-1.5 rounded-lg font-medium border transition-all ${view==="my"?"bg-blue-50 text-blue-700 border-blue-200":"bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}>My Roles ({ONET_INGESTED.length})</button>
       <button onClick={()=>setView("catalog")} className={`text-xs px-3 py-1.5 rounded-lg font-medium border transition-all ${view==="catalog"?"bg-blue-50 text-blue-700 border-blue-200":"bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}>O*Net Catalog ({ONET_CATALOG.length})</button>
@@ -1892,10 +2074,11 @@ function OnetLexiconPage({nav, isAdmin}) {
 // O*NET PAGE 6: ROLE DETAIL
 // ═══════════════════════════════════════════════════════════════
 
-function OnetRoleDetailPage({nav, isAdmin}) {
+function OnetRoleDetailPage({nav, isAdmin, isAuditor, role:userRole}) {
   const role=ONET_CATALOG[0];
   const [tab,setTab]=useState("overview");
-  const tabs=[{k:"overview",l:"Overview"},{k:"tasks",l:"Tasks"},{k:"activities",l:"Work Activities"},{k:"skills",l:"Skills & Knowledge"},{k:"terms",l:"Term Connections"}];
+  const roleMappings=STIG_ONET_MAPPINGS.filter(m=>m.onetOccupation===role.id);
+  const tabs=[{k:"overview",l:"Overview"},{k:"tasks",l:"Tasks"},{k:"activities",l:"Work Activities"},{k:"skills",l:"Skills & Knowledge"},{k:"stigMappings",l:`STIG Mappings (${roleMappings.length})`},{k:"terms",l:"Term Connections"}];
   // Find STIG terms that connect to this role's task tags
   const roleTags=[...new Set([...role.tasks,...role.work_activities].flatMap(i=>i.mwe_tags))];
   const connectedStigTerms=LEX.filter(l=>roleTags.some(rt=>l.term.includes(rt)||l.related.some(r=>r.includes(rt))));
@@ -1941,6 +2124,38 @@ function OnetRoleDetailPage({nav, isAdmin}) {
       </div>
     </div>}
 
+    {/* ════════ STIG MAPPINGS TAB ════════ */}
+    {tab==="stigMappings"&&<div className="space-y-4">
+      <div className="grid grid-cols-4 gap-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Shield size={13} className="text-indigo-400"/><span className="text-[11px] text-slate-500">Total Mappings</span></div><div className="text-xl font-bold text-slate-900 tabular-nums">{roleMappings.length}</div></div>
+        <div className="bg-white rounded-xl border border-amber-200 p-3"><div className="flex items-center gap-2 mb-1"><Zap size={13} className="text-amber-400"/><span className="text-[11px] text-slate-500">Suggested</span></div><div className="text-xl font-bold text-amber-600 tabular-nums">{roleMappings.filter(m=>m.status==="suggested").length}</div></div>
+        <div className="bg-white rounded-xl border border-blue-200 p-3"><div className="flex items-center gap-2 mb-1"><CheckCircle2 size={13} className="text-blue-400"/><span className="text-[11px] text-slate-500">Team Approved</span></div><div className="text-xl font-bold text-blue-600 tabular-nums">{roleMappings.filter(m=>m.status==="team_approved").length}</div></div>
+        <div className="bg-white rounded-xl border border-emerald-200 p-3"><div className="flex items-center gap-2 mb-1"><ShieldCheck size={13} className="text-emerald-400"/><span className="text-[11px] text-slate-500">Validated</span></div><div className="text-xl font-bold text-emerald-600 tabular-nums">{roleMappings.filter(m=>m.status==="auditor_validated").length}</div></div>
+      </div>
+      <p className="text-xs text-slate-500">STIG findings mapped to this role's tasks and work activities. The Lexicon's MWE terms serve as the bridge.</p>
+      {/* Group by finding */}
+      {[...new Set(roleMappings.filter(m=>m.status!=="team_rejected").map(m=>m.stigFinding))].map(fid=>{
+        const fMaps=roleMappings.filter(m=>m.stigFinding===fid&&m.status!=="team_rejected");
+        return(<div key={fid} className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <button onClick={()=>nav("stig-finding")} className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 hover:bg-indigo-100">{fid}</button>
+            <span className="text-xs text-slate-600">{fMaps[0]?.stigTitle}</span>
+          </div>
+          <div className="space-y-2">{fMaps.map(m=>{const st=MAPPING_STATUS[m.status];return(
+            <div key={m.id} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold border shrink-0 ${st.color}`}>{st.icon}</span>
+              <span className="text-[10px] text-slate-400 uppercase font-semibold w-14 shrink-0">{m.onetTask?"Task":"Activity"}</span>
+              <span className="text-[11px] text-slate-700 flex-1">{m.onetTaskText}</span>
+              <div className="flex items-center gap-1">{m.bridgeTerms.map((bt,i)=><span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono">{bt}</span>)}</div>
+              <CB s={m.confidence}/>
+              {isAdmin&&m.status==="suggested"&&<><button className="text-[10px] px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 font-medium">Reject</button></>}
+              {isAuditor&&m.status==="team_approved"&&<><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">Validate</button><button className="text-[10px] px-2 py-1 rounded bg-orange-50 text-orange-700 border border-orange-200 font-medium">Dispute</button></>}
+            </div>);
+          })}</div>
+        </div>);
+      })}
+    </div>}
+
     {tab==="terms"&&<div className="space-y-4">
       <p className="text-xs text-slate-500">STIG terms connected to this role through task/activity MWE tags ({connectedStigTerms.length} found)</p>
       <div className="space-y-2">{connectedStigTerms.length>0?connectedStigTerms.map(l=>(
@@ -1960,7 +2175,7 @@ function OnetRoleDetailPage({nav, isAdmin}) {
 // NEXUS LEXICON (Unified)
 // ═══════════════════════════════════════════════════════════════
 
-function NexusLexiconPage({nav, isAdmin}) {
+function NexusLexiconPage({nav, isAdmin, isAuditor, role}) {
   const [nlTab,setNlTab]=useState("glossary");
   const [search,setSearch]=useState("");
   const [sourceFilter,setSourceFilter]=useState("all");
@@ -1998,7 +2213,7 @@ function NexusLexiconPage({nav, isAdmin}) {
   const srcBadge={stig:{bg:"bg-indigo-50",text:"text-indigo-700",border:"border-indigo-200",label:"STIG"},onet:{bg:"bg-cyan-50",text:"text-cyan-700",border:"border-cyan-200",label:"O*Net"},both:{bg:"bg-emerald-50",text:"text-emerald-700",border:"border-emerald-200",label:"Both"}};
 
   const tabs=[{k:"glossary",l:"Glossary",i:BookOpen},{k:"crosswalk",l:"Crosswalk",i:ArrowUpDown},{k:"gap",l:"Gap Analysis",i:Target},{k:"graph",l:"Knowledge Graph",i:Network}];
-  if(isAdmin) tabs.push({k:"manage",l:"Manage",i:Pencil});
+  if(isAdmin||isAuditor) tabs.push({k:"manage",l:isAuditor?"Validate":"Manage",i:isAuditor?ShieldCheck:Pencil});
 
   // Crosswalk data: STIG terms that map to O*Net skills/knowledge
   const CROSSWALK = useMemo(()=>{
@@ -2067,27 +2282,52 @@ function NexusLexiconPage({nav, isAdmin}) {
       })}</div>
     </div>}
 
-    {/* ════════ CROSSWALK ════════ */}
+    {/* ════════ CROSSWALK (Three-Tier Mapping) ════════ */}
     {nlTab==="crosswalk"&&<div className="space-y-4">
-      <p className="text-xs text-slate-500">Mappings between STIG security terms and O*Net occupation skills/knowledge areas ({CROSSWALK.length} connections)</p>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="grid grid-cols-5 gap-px bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
-          <div className="bg-slate-50 px-3 py-2">STIG Term</div>
-          <div className="bg-slate-50 px-3 py-2">O*Net Attribute</div>
-          <div className="bg-slate-50 px-3 py-2">Type</div>
-          <div className="bg-slate-50 px-3 py-2">Role</div>
-          <div className="bg-slate-50 px-3 py-2">Importance</div>
-        </div>
-        <div className="max-h-[400px] overflow-y-auto divide-y divide-slate-100">{CROSSWALK.map((cw,i)=>(
-          <div key={i} className="grid grid-cols-5 gap-px text-[11px] hover:bg-blue-50/50 transition-colors">
-            <div className="px-3 py-2 font-mono text-indigo-700">{cw.stigTerm}</div>
-            <div className="px-3 py-2 font-mono text-cyan-700">{cw.onetAttr}</div>
-            <div className="px-3 py-2"><span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${cw.onetType==="Skill"?"bg-blue-100 text-blue-700":"bg-violet-100 text-violet-700"}`}>{cw.onetType}</span></div>
-            <div className="px-3 py-2 text-slate-600 truncate">{cw.role}</div>
-            <div className="px-3 py-2"><div className="flex items-center gap-1"><div className="w-12 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-emerald-500" style={{width:`${cw.importance/5*100}%`}}/></div><span className="text-[10px] font-semibold text-slate-500">{cw.importance}</span></div></div>
-          </div>
-        ))}</div>
+      <p className="text-xs text-slate-500">STIG ↔ O*Net finding-level mappings through MWE term overlap. Lifecycle: Auto-Suggested → Team Approved → Auditor Validated ({STIG_ONET_MAPPINGS.length} total)</p>
+      {/* Summary row */}
+      <div className="grid grid-cols-5 gap-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-2 text-center"><div className="text-lg font-bold text-slate-900">{MAPPING_COUNTS.total}</div><div className="text-[9px] text-slate-500">Total</div></div>
+        <div className="bg-amber-50 rounded-xl border border-amber-200 p-2 text-center"><div className="text-lg font-bold text-amber-600">{MAPPING_COUNTS.suggested}</div><div className="text-[9px] text-amber-600">Suggested</div></div>
+        <div className="bg-blue-50 rounded-xl border border-blue-200 p-2 text-center"><div className="text-lg font-bold text-blue-600">{MAPPING_COUNTS.team_approved}</div><div className="text-[9px] text-blue-600">Team Approved</div></div>
+        <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-2 text-center"><div className="text-lg font-bold text-emerald-600">{MAPPING_COUNTS.auditor_validated}</div><div className="text-[9px] text-emerald-600">Auditor Validated</div></div>
+        <div className="bg-red-50 rounded-xl border border-red-200 p-2 text-center"><div className="text-lg font-bold text-red-500">{MAPPING_COUNTS.team_rejected}</div><div className="text-[9px] text-red-500">Rejected</div></div>
       </div>
+      {/* Mapping table */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="grid grid-cols-7 gap-px bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
+          <div className="bg-slate-50 px-3 py-2">STIG Finding</div>
+          <div className="bg-slate-50 px-3 py-2">O*Net Task/Activity</div>
+          <div className="bg-slate-50 px-3 py-2">Role</div>
+          <div className="bg-slate-50 px-3 py-2">Bridge Terms</div>
+          <div className="bg-slate-50 px-3 py-2">Conf.</div>
+          <div className="bg-slate-50 px-3 py-2">Status</div>
+          <div className="bg-slate-50 px-3 py-2">Actions</div>
+        </div>
+        <div className="max-h-[400px] overflow-y-auto divide-y divide-slate-100">{STIG_ONET_MAPPINGS.map(m=>{const st=MAPPING_STATUS[m.status];return(
+          <div key={m.id} className="grid grid-cols-7 gap-px text-[11px] hover:bg-blue-50/50 transition-colors items-center">
+            <div className="px-3 py-2"><span className="font-mono text-indigo-700 text-[10px]">{m.stigFinding}</span></div>
+            <div className="px-3 py-2 text-slate-600 text-[10px] truncate">{m.onetTaskText}</div>
+            <div className="px-3 py-2 text-[10px] text-slate-500 truncate">{m.onetRole.split(" ").slice(0,2).join(" ")}</div>
+            <div className="px-3 py-2"><div className="flex flex-wrap gap-0.5">{m.bridgeTerms.map((bt,i)=><span key={i} className="text-[8px] px-1 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono">{bt}</span>)}</div></div>
+            <div className="px-3 py-2"><CB s={m.confidence}/></div>
+            <div className="px-3 py-2"><span className={`text-[8px] px-1.5 py-0.5 rounded-full font-semibold border ${st.color}`}>{st.label}</span></div>
+            <div className="px-3 py-2 flex gap-1">
+              {isAdmin&&m.status==="suggested"&&<><button className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">✓</button><button className="text-[9px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">✗</button></>}
+              {isAuditor&&m.status==="team_approved"&&<><button className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">✔</button><button className="text-[9px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">⚠</button></>}
+              {m.status==="auditor_validated"&&<span className="text-[9px] text-emerald-600">✔✔</span>}
+              {m.status==="team_rejected"&&<span className="text-[9px] text-red-400">—</span>}
+            </div>
+          </div>);
+        })}</div>
+      </div>
+      {/* Legacy term-level crosswalk */}
+      <details className="bg-white rounded-xl border border-slate-200 p-3">
+        <summary className="text-xs text-slate-500 cursor-pointer font-medium">Term-Level Crosswalk (legacy — {CROSSWALK.length} connections)</summary>
+        <div className="mt-2 max-h-[200px] overflow-y-auto divide-y divide-slate-100">{CROSSWALK.map((cw,i)=>(
+          <div key={i} className="flex items-center gap-3 py-1.5 text-[10px]"><span className="font-mono text-indigo-700 w-28 shrink-0">{cw.stigTerm}</span><ArrowRight size={8} className="text-slate-300"/><span className="font-mono text-cyan-700 w-28 shrink-0">{cw.onetAttr}</span><span className={`px-1 py-0.5 rounded text-[8px] font-semibold ${cw.onetType==="Skill"?"bg-blue-100 text-blue-700":"bg-violet-100 text-violet-700"}`}>{cw.onetType}</span><span className="text-slate-500 truncate flex-1">{cw.role}</span></div>
+        ))}</div>
+      </details>
     </div>}
 
     {/* ════════ GAP ANALYSIS ════════ */}
@@ -2138,17 +2378,60 @@ function NexusLexiconPage({nav, isAdmin}) {
     </div>}
 
     {/* ════════ MANAGE ════════ */}
-    {nlTab==="manage"&&isAdmin&&<div className="space-y-4">
-      <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2"><Pencil size={14}/>Unified Lexicon Management</h2>
-      <p className="text-xs text-slate-500">Review cross-domain term proposals, resolve source conflicts, and manage the unified vocabulary.</p>
+    {nlTab==="manage"&&(isAdmin||isAuditor)&&<div className="space-y-4">
+      <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2"><Pencil size={14}/>{isAuditor?"Auditor Validation Queue":"Unified Lexicon Management"}</h2>
+      <p className="text-xs text-slate-500">{isAuditor?"Team-approved STIG ↔ O*Net mappings awaiting your optional validation.":"Review cross-domain proposals, manage mappings, and resolve source conflicts."}</p>
+
+      {/* Mapping review queue */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <h3 className="text-xs font-semibold text-slate-700 mb-3">Pending Cross-Domain Mappings</h3>
+        <h3 className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-2">{isAdmin?<Zap size={12} className="text-amber-500"/>:<ShieldCheck size={12} className="text-teal-500"/>}{isAdmin?"Auto-Suggested Mappings":"Awaiting Validation"}</h3>
+        <p className="text-[10px] text-slate-400 mb-3">{isAdmin?`${MAPPING_COUNTS.suggested} mappings pending team review`:`${MAPPING_COUNTS.team_approved} mappings approved by team — validate at your discretion`}</p>
+        <div className="space-y-2">
+          {STIG_ONET_MAPPINGS.filter(m=>isAdmin?m.status==="suggested":m.status==="team_approved").map(m=>{
+            const st=MAPPING_STATUS[m.status];
+            return(<div key={m.id} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-blue-50/30 transition-all">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="text-[10px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 shrink-0">{m.stigFinding}</span>
+                <ArrowRight size={10} className="text-slate-300 shrink-0"/>
+                <span className="text-[10px] text-slate-600 truncate">{m.onetTaskText}</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-700 border border-cyan-200 font-mono shrink-0">{m.onetOccupation}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                <div className="flex gap-0.5">{m.bridgeTerms.map((bt,i)=><span key={i} className="text-[8px] px-1 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-200 font-mono">{bt}</span>)}</div>
+                <CB s={m.confidence}/>
+                {isAdmin&&<><button className="text-[10px] px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 font-medium">Reject</button></>}
+                {isAuditor&&<><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">Validate</button><button className="text-[10px] px-2 py-1 rounded bg-orange-50 text-orange-700 border border-orange-200 font-medium">Dispute</button></>}
+              </div>
+            </div>);
+          })}
+          {STIG_ONET_MAPPINGS.filter(m=>isAdmin?m.status==="suggested":m.status==="team_approved").length===0&&<p className="text-[10px] text-slate-400 text-center py-4">No items in queue</p>}
+        </div>
+      </div>
+
+      {/* Term-level proposals (admin only) */}
+      {isAdmin&&<div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3">Pending Cross-Domain Term Proposals</h3>
         <div className="space-y-2">
           <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">access control</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">security settings</span><span className="text-[9px] text-slate-500">proposed synonym</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
           <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">indicators of compromise</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">security breach</span><span className="text-[9px] text-slate-500">proposed related</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
           <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">file integrity</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">vulnerability assessment</span><span className="text-[9px] text-slate-500">proposed related</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
         </div>
-      </div>
+      </div>}
+
+      {/* Audit trail (auditor view) */}
+      {isAuditor&&<div className="bg-white rounded-xl border border-emerald-200 p-4">
+        <h3 className="text-xs font-semibold text-emerald-700 mb-3 flex items-center gap-2"><ShieldCheck size={12}/>Your Validated Mappings</h3>
+        <div className="space-y-1">{STIG_ONET_MAPPINGS.filter(m=>m.status==="auditor_validated").map(m=>(
+          <div key={m.id} className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50/50 text-[10px]">
+            <CheckCircle2 size={10} className="text-emerald-500"/>
+            <span className="font-mono text-indigo-700">{m.stigFinding}</span>
+            <ArrowRight size={8} className="text-slate-300"/>
+            <span className="text-slate-600 truncate flex-1">{m.onetTaskText}</span>
+            <span className="text-emerald-600 font-medium">{m.auditorValidatedBy}</span>
+            <span className="text-slate-400">{m.auditorValidatedAt}</span>
+          </div>
+        ))}</div>
+      </div>}
     </div>}
   </div>);
 }
@@ -2157,13 +2440,16 @@ function NexusLexiconPage({nav, isAdmin}) {
 // APP SHELL — Collapsible Left Sidebar
 // ═══════════════════════════════════════════════════════════════
 
-const ROLES = { admin: "Mapping Team", user: "End User" };
+const ROLES = { admin: "Mapping Team", auditor: "Auditor", user: "End User" };
+const ROLE_CYCLE = ["admin","auditor","user"];
 
 export default function NexusApp() {
   const [page,setPage]=useState("stig-library");
   const [role,setRole]=useState("admin");
   const [sidebarOpen,setSidebarOpen]=useState({stigs:true,onet:false,nexus:false});
   const isAdmin = role === "admin";
+  const isAuditor = role === "auditor";
+  const canReview = role === "admin" || role === "auditor";
 
   const toggleSection=(key)=>setSidebarOpen(prev=>({...prev,[key]:!prev[key]}));
 
@@ -2195,8 +2481,8 @@ export default function NexusApp() {
           <div><h1 className="text-sm font-bold text-slate-900">Nexus Platform</h1><p className="text-[10px] text-slate-500">Open Controls — STIG + O*Net Intelligence</p></div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setRole(role === "admin" ? "user" : "admin")} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${isAdmin ? "bg-violet-50 text-violet-700 border-violet-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
-            {isAdmin ? <Shield size={11} /> : <Eye size={11} />}
+          <button onClick={() => {const idx=ROLE_CYCLE.indexOf(role);setRole(ROLE_CYCLE[(idx+1)%ROLE_CYCLE.length]);}} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${isAdmin?"bg-violet-50 text-violet-700 border-violet-200":isAuditor?"bg-teal-50 text-teal-700 border-teal-200":"bg-slate-50 text-slate-600 border-slate-200"}`}>
+            {isAdmin?<Shield size={11}/>:isAuditor?<ShieldCheck size={11}/>:<Eye size={11}/>}
             {ROLES[role]}
           </button>
           <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">DC</div>
@@ -2204,7 +2490,8 @@ export default function NexusApp() {
       </div>
     </div>
     {/* Role banner */}
-    {!isAdmin && <div className="bg-slate-100 border-b border-slate-200 px-4 py-1.5 shrink-0"><div className="flex items-center gap-2 text-[10px] text-slate-500"><Eye size={10}/>Viewing as End User — some internal details are hidden<button onClick={()=>setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
+    {isAuditor && <div className="bg-teal-50 border-b border-teal-200 px-4 py-1.5 shrink-0"><div className="flex items-center gap-2 text-[10px] text-teal-700"><ShieldCheck size={10}/>Viewing as Auditor — you can optionally validate team-approved mappings<button onClick={()=>setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
+    {role==="user" && <div className="bg-slate-100 border-b border-slate-200 px-4 py-1.5 shrink-0"><div className="flex items-center gap-2 text-[10px] text-slate-500"><Eye size={10}/>Viewing as End User — some internal details are hidden<button onClick={()=>setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
     {/* Main layout: sidebar + content */}
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
@@ -2246,14 +2533,14 @@ export default function NexusApp() {
           {page==="stig-pipeline"&&<PipelinePage nav={setPage}/>}
           {page==="stig-exceptions"&&<ExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
           {page==="stig-lexicon"&&<LexiconPage nav={setPage} isAdmin={isAdmin}/>}
-          {page==="stig-finding"&&<FindingPage nav={setPage} isAdmin={isAdmin}/>}
-          {page==="onet-library"&&<OnetLibraryPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="stig-finding"&&<FindingPage nav={setPage} isAdmin={isAdmin} isAuditor={isAuditor} role={role}/>}
+          {page==="onet-library"&&<OnetLibraryPage nav={setPage} isAdmin={isAdmin} isAuditor={isAuditor} role={role}/>}
           {page==="onet-dashboard"&&<OnetDashboardPage nav={setPage} isAdmin={isAdmin}/>}
           {page==="onet-pipeline"&&<OnetPipelinePage nav={setPage} isAdmin={isAdmin}/>}
           {page==="onet-exceptions"&&<OnetExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
           {page==="onet-lexicon"&&<OnetLexiconPage nav={setPage} isAdmin={isAdmin}/>}
-          {page==="onet-role"&&<OnetRoleDetailPage nav={setPage} isAdmin={isAdmin}/>}
-          {page==="nexus-lexicon"&&<NexusLexiconPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-role"&&<OnetRoleDetailPage nav={setPage} isAdmin={isAdmin} isAuditor={isAuditor} role={role}/>}
+          {page==="nexus-lexicon"&&<NexusLexiconPage nav={setPage} isAdmin={isAdmin} isAuditor={isAuditor} role={role}/>}
         </div>
       </div>
     </div>
