@@ -8,7 +8,8 @@ import {
   Link, Minimize2, Maximize2, PauseCircle, ChevronUp,
   BookOpen, Hash, TrendingUp, ArrowUpDown, Filter,
   BarChart3, GitBranch, DollarSign, Zap, PieChart, Network,
-  Library, ListChecks, Archive, FolderPlus, Pencil, Trash2, Share2, Star
+  Library, ListChecks, Archive, FolderPlus, Pencil, Trash2, Share2, Star,
+  Users, Briefcase, Target, Crosshair, MapPin, Menu, Sidebar
 } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
@@ -271,7 +272,7 @@ function PipelinePage({nav}) {
       <div className="flex-1">
         <div className="flex items-center gap-3 mb-0.5"><h2 className="text-base font-bold text-slate-900">Anduril NixOS STIG</h2><span className="text-xs font-mono text-slate-400">V1</span><SP status="processing"/></div>
       </div>
-      <button onClick={()=>nav("exceptions")} className="text-xs px-3 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-orange-700 flex items-center gap-1.5 font-medium"><AlertTriangle size={13}/>{EXC.length} Exceptions</button>
+      <button onClick={()=>nav("stig-exceptions")} className="text-xs px-3 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-orange-700 flex items-center gap-1.5 font-medium"><AlertTriangle size={13}/>{EXC.length} Exceptions</button>
     </div>
     {/* Filters */}
     <div className="flex items-center gap-2 flex-wrap">
@@ -288,7 +289,7 @@ function PipelinePage({nav}) {
           <th className="pl-3 pr-1 py-2 w-6"></th><th className="py-2 pr-2 text-left">Rule ID</th><th className="py-2 pr-2 text-left" style={{minWidth:200}}>Title</th><th className="py-2 pr-2 text-left">Sev</th><th className="py-2 pr-2 text-left">Stage</th><th className="py-2 pr-2 text-left" style={{minWidth:120}}>Progress</th><th className="py-2 pr-2 text-center">MWE</th><th className="py-2 pr-2 text-center">Mand.</th><th className="py-2 pr-2 text-left">SCL</th><th className="py-2 w-6"></th>
         </tr></thead>
         <tbody>{paged.map(f=><React.Fragment key={f.id}>
-          <tr className={`border-b border-slate-100 hover:bg-slate-50 cursor-pointer text-xs transition-colors ${exp===f.id?"bg-slate-50":""} ${f.st==="at_checkpoint"?"bg-orange-50/30":""}`} onClick={()=>{if(f.st==="completed"&&f.id==="V-268078")nav("finding");else setExp(exp===f.id?null:f.id);}}>
+          <tr className={`border-b border-slate-100 hover:bg-slate-50 cursor-pointer text-xs transition-colors ${exp===f.id?"bg-slate-50":""} ${f.st==="at_checkpoint"?"bg-orange-50/30":""}`} onClick={()=>{if(f.st==="completed"&&f.id==="V-268078")nav("stig-finding");else setExp(exp===f.id?null:f.id);}}>
             <td className="pl-3 pr-1 py-2">{exp===f.id?<ChevronDown size={12} className="text-slate-400"/>:<ChevronRight size={12} className="text-slate-400"/>}</td>
             <td className="py-2 pr-2"><span className="font-mono text-[11px] font-semibold text-slate-700">{f.id}</span></td>
             <td className="py-2 pr-2"><span className="text-[11px] text-slate-700 line-clamp-1">{f.title}</span></td>
@@ -393,7 +394,7 @@ function FindingPage({nav, isAdmin}) {
   const findingTags = ["#firewall", "#configuration", "#network", "#ssh"];
 
   return (<div className="space-y-5">
-    <div className="flex items-center gap-1.5 text-xs text-slate-500"><button onClick={() => nav("pipeline")} className="hover:text-blue-600">Pipeline</button><ChevronRight size={12} /><button onClick={() => nav("dashboard")} className="hover:text-blue-600">Dashboard</button><ChevronRight size={12} /><span className="text-slate-700 font-medium">{f.id}</span></div>
+    <div className="flex items-center gap-1.5 text-xs text-slate-500"><button onClick={() => nav("stig-pipeline")} className="hover:text-blue-600">Pipeline</button><ChevronRight size={12} /><button onClick={() => nav("stig-dashboard")} className="hover:text-blue-600">Dashboard</button><ChevronRight size={12} /><span className="text-slate-700 font-medium">{f.id}</span></div>
     {/* Finding header card */}
     <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center gap-2 mb-1"><span className="font-mono text-sm font-bold text-slate-800">{f.id}</span><Sev l={f.severity} /></div>
@@ -1059,7 +1060,7 @@ function DashboardPage({ nav, isAdmin }) {
         <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><BarChart3 size={18} />STIG Dashboard</h1>
         <p className="text-xs text-slate-500">Anduril NixOS Security Technical Implementation Guide — Processing Overview</p>
       </div>
-      <button onClick={() => nav("pipeline")} className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 flex items-center gap-1.5 font-medium"><Activity size={13} />View Pipeline</button>
+      <button onClick={() => nav("stig-pipeline")} className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 flex items-center gap-1.5 font-medium"><Activity size={13} />View Pipeline</button>
     </div>
 
     {/* Summary Cards */}
@@ -1181,10 +1182,10 @@ function DashboardPage({ nav, isAdmin }) {
     <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs font-semibold text-slate-700 flex items-center gap-2"><FileText size={13} />High Severity Findings</h3>
-        <button onClick={() => nav("pipeline")} className="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">View all <ArrowRight size={11} /></button>
+        <button onClick={() => nav("stig-pipeline")} className="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">View all <ArrowRight size={11} /></button>
       </div>
       <div className="space-y-1">
-        {ALL.filter(f => f.severity === "CAT I").slice(0, 6).map(f => (<div key={f.id} className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-slate-50 cursor-pointer" onClick={() => { if (f.id === "V-268078") nav("finding"); }}>
+        {ALL.filter(f => f.severity === "CAT I").slice(0, 6).map(f => (<div key={f.id} className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-slate-50 cursor-pointer" onClick={() => { if (f.id === "V-268078") nav("stig-finding"); }}>
           <span className="font-mono text-[11px] font-semibold text-slate-600 w-16">{f.id}</span>
           <span className="text-[11px] text-slate-700 flex-1 truncate">{f.title}</span>
           <Sev l={f.severity} />
@@ -1344,7 +1345,7 @@ function LibraryPage({ nav, isAdmin }) {
               <span>{s.type}</span><span>{s.findings} findings</span><span className="text-red-500 font-medium">{s.severity.high} high</span>
             </div>
           </div>
-          {s.status === "ingested" && <button onClick={() => nav("dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium flex items-center gap-1"><BarChart3 size={12} />Dashboard</button>}
+          {s.status === "ingested" && <button onClick={() => nav("stig-dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium flex items-center gap-1"><BarChart3 size={12} />Dashboard</button>}
           <button onClick={() => removeFromList(listDetail.id, s.id)} className="text-xs px-2 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50"><X size={12} /></button>
         </div>))}
       </div>
@@ -1383,7 +1384,7 @@ function LibraryPage({ nav, isAdmin }) {
     {/* ── My STIGs ── */}
     {view === "my" && <div className="space-y-3">
       {ingested.length === 0 && <div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Upload size={36} className="mx-auto text-slate-300 mb-2" /><h3 className="text-sm font-semibold text-slate-700">No STIGs ingested yet</h3><p className="text-xs text-slate-500 mt-1">Browse the catalog to add STIGs to your pipeline.</p></div>}
-      {ingested.map(s => (<div key={s.id} className="bg-white rounded-xl border-2 border-emerald-200 p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => nav("dashboard")}>
+      {ingested.map(s => (<div key={s.id} className="bg-white rounded-xl border-2 border-emerald-200 p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => nav("stig-dashboard")}>
         <div className="flex items-start justify-between mb-2">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
@@ -1433,7 +1434,7 @@ function LibraryPage({ nav, isAdmin }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {s.status === "ingested" ? <button onClick={() => nav("dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><BarChart3 size={12} />View</button>
+              {s.status === "ingested" ? <button onClick={() => nav("stig-dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><BarChart3 size={12} />View</button>
                 : <button className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium border border-blue-200 flex items-center gap-1"><Upload size={12} />Ingest</button>}
             </div>
           </div>
@@ -1510,21 +1511,689 @@ function LibraryPage({ nav, isAdmin }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// APP SHELL
+// O*NET DATA MODEL
+// ═══════════════════════════════════════════════════════════════
+
+const ONET_CATALOG = [
+  {id:"15-1212.00",title:"Information Security Analysts",soc_family:"15-1200",category:"Computer Occupations",
+    description:"Plan, implement, upgrade, or monitor security measures for the protection of computer networks and information. Ensure appropriate security controls are in place.",
+    status:"ingested",bright_outlook:true,median_salary:"$112,000",employment:"175,350",growth:"32%",
+    tasks:[
+      {id:"t1",text:"Monitor computer networks for security issues",importance:4.5,tagged:true,mwe_tags:["network monitoring","security incident"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+      {id:"t2",text:"Investigate security breaches and other cybersecurity incidents",importance:4.3,tagged:true,mwe_tags:["security breach","incident response"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"}},
+      {id:"t3",text:"Install security measures and operate software to protect systems",importance:4.1,tagged:false,mwe_tags:[],status:"in_progress",council:{}},
+      {id:"t4",text:"Document security breaches and assess the damage they cause",importance:3.9,tagged:true,mwe_tags:["security breach","damage assessment"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"}},
+      {id:"t5",text:"Develop plans to safeguard computer files against unauthorized access",importance:3.8,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"t6",text:"Perform risk assessments and execute tests of data processing system",importance:3.7,tagged:true,mwe_tags:["risk assessment","data processing"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+    ],
+    work_activities:[
+      {id:"wa1",text:"Analyzing Data or Information",importance:4.2,tagged:true,mwe_tags:["data analysis"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+      {id:"wa2",text:"Working with Computers",importance:4.5,tagged:true,mwe_tags:["information system"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+      {id:"wa3",text:"Getting Information",importance:4.0,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"wa4",text:"Making Decisions and Solving Problems",importance:3.9,tagged:true,mwe_tags:["decision making"],status:"completed",council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"}},
+      {id:"wa5",text:"Updating and Using Relevant Knowledge",importance:3.8,tagged:true,mwe_tags:["continuing education"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"}},
+    ],
+    skills:[{name:"Information Security",level:4.5,importance:4.8},{name:"Network Security",level:4.2,importance:4.5},{name:"Vulnerability Assessment",level:3.8,importance:4.0},{name:"Incident Response",level:3.7,importance:4.2},{name:"Risk Management",level:3.5,importance:3.8}],
+    knowledge:[{name:"Computers and Electronics",level:4.5,importance:4.7},{name:"Telecommunications",level:3.8,importance:3.9},{name:"Administration and Management",level:3.2,importance:3.4},{name:"English Language",level:3.5,importance:3.6},{name:"Law and Government",level:3.0,importance:3.2}],
+  },
+  {id:"15-1231.00",title:"Computer Network Support Specialists",soc_family:"15-1200",category:"Computer Occupations",
+    description:"Analyze, test, troubleshoot, and evaluate existing network systems such as LAN, WAN, cloud, and internet systems.",
+    status:"ingested",bright_outlook:false,median_salary:"$62,760",employment:"172,520",growth:"6%",
+    tasks:[
+      {id:"t1",text:"Back up network data",importance:4.0,tagged:true,mwe_tags:["data backup","network data"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+      {id:"t2",text:"Configure security settings or access permissions for groups or individuals",importance:4.2,tagged:true,mwe_tags:["access control","security settings"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"}},
+      {id:"t3",text:"Analyze and report computer network security breaches",importance:3.8,tagged:true,mwe_tags:["security breach","network security"],status:"at_checkpoint",council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"}},
+      {id:"t4",text:"Monitor network performance to determine if adjustments are needed",importance:3.5,tagged:false,mwe_tags:[],status:"pending",council:{}},
+    ],
+    work_activities:[
+      {id:"wa1",text:"Working with Computers",importance:4.5,tagged:true,mwe_tags:["information system"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"}},
+      {id:"wa2",text:"Communicating with Supervisors",importance:3.5,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"wa3",text:"Updating and Using Relevant Knowledge",importance:3.6,tagged:true,mwe_tags:["continuing education"],status:"completed",council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"}},
+    ],
+    skills:[{name:"Network Administration",level:4.0,importance:4.3},{name:"Troubleshooting",level:3.8,importance:4.0},{name:"Systems Analysis",level:3.5,importance:3.7}],
+    knowledge:[{name:"Computers and Electronics",level:4.2,importance:4.5},{name:"Telecommunications",level:3.9,importance:4.1},{name:"Customer Service",level:3.0,importance:3.2}],
+  },
+  {id:"15-1211.00",title:"Computer Systems Analysts",soc_family:"15-1200",category:"Computer Occupations",
+    description:"Analyze science, engineering, business, and other data processing problems to develop and implement solutions to complex applications problems.",
+    status:"available",bright_outlook:true,median_salary:"$99,270",employment:"650,100",growth:"10%",
+    tasks:[
+      {id:"t1",text:"Provide staff and users with assistance solving computer-related problems",importance:4.0,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"t2",text:"Test, maintain, and monitor computer programs and systems",importance:3.9,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"t3",text:"Develop and document configuration management policies",importance:3.5,tagged:false,mwe_tags:[],status:"pending",council:{}},
+    ],
+    work_activities:[
+      {id:"wa1",text:"Getting Information",importance:4.1,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"wa2",text:"Analyzing Data or Information",importance:4.0,tagged:false,mwe_tags:[],status:"pending",council:{}},
+    ],
+    skills:[{name:"Systems Analysis",level:4.0,importance:4.3},{name:"Critical Thinking",level:3.8,importance:4.0}],
+    knowledge:[{name:"Computers and Electronics",level:4.3,importance:4.5},{name:"Mathematics",level:3.2,importance:3.4}],
+  },
+  {id:"13-1111.00",title:"Management Analysts",soc_family:"13-1100",category:"Business Operations Specialists",
+    description:"Conduct organizational studies and evaluations, design systems and procedures, conduct work simplification and measurement studies.",
+    status:"available",bright_outlook:true,median_salary:"$95,290",employment:"876,300",growth:"10%",
+    tasks:[
+      {id:"t1",text:"Gather and organize information on problems or procedures",importance:4.2,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"t2",text:"Analyze data to identify solutions and determine costs and benefits",importance:4.0,tagged:false,mwe_tags:[],status:"pending",council:{}},
+    ],
+    work_activities:[
+      {id:"wa1",text:"Analyzing Data or Information",importance:4.3,tagged:false,mwe_tags:[],status:"pending",council:{}},
+      {id:"wa2",text:"Making Decisions and Solving Problems",importance:4.1,tagged:false,mwe_tags:[],status:"pending",council:{}},
+    ],
+    skills:[{name:"Critical Thinking",level:4.0,importance:4.2},{name:"Active Listening",level:3.8,importance:4.0}],
+    knowledge:[{name:"Administration and Management",level:4.0,importance:4.2},{name:"English Language",level:3.5,importance:3.7}],
+  },
+];
+
+const ONET_INGESTED = ONET_CATALOG.filter(o=>o.status==="ingested");
+
+// O*Net domain lexicon
+const ONET_LEX = [
+  {id:"olex-001",term:"risk assessment",source:"onet",status:"validated",freq:34,stigs:0,cat:"Risk Management",def:"The process of identifying, analyzing, and evaluating risk to organizational operations, assets, and individuals.",related:["vulnerability assessment","threat analysis"],conf:0.91,senses:[{sense_number:1,sense_label:"Qualitative",definition:"Risk evaluation using likelihood/impact matrices and expert judgment.",framework:"NIST SP 800-30"},{sense_number:2,sense_label:"Quantitative",definition:"Risk evaluation using statistical methods, loss expectancy calculations, and probability distributions.",framework:"FAIR"}],triples:[{subject:"risk assessment",predicate:"broader",object:"vulnerability assessment",type:"hierarchical"}]},
+  {id:"olex-002",term:"incident response",source:"onet",status:"validated",freq:28,stigs:0,cat:"Operations",def:"The organized approach to addressing and managing the aftermath of a security breach or cyberattack.",related:["security breach","indicators of compromise"],conf:0.94,senses:[],triples:[{subject:"incident response",predicate:"related",object:"security breach",type:"semantic"}]},
+  {id:"olex-003",term:"network monitoring",source:"onet",status:"validated",freq:41,stigs:0,cat:"Operations",def:"Continuous observation of a computer network for slow or failing components, unauthorized access, or anomalous behavior.",related:["network security","indicators of compromise"],conf:0.92,senses:[],triples:[{subject:"network monitoring",predicate:"related",object:"indicators of compromise",type:"semantic"}]},
+  {id:"olex-004",term:"vulnerability assessment",source:"onet",status:"validated",freq:22,stigs:0,cat:"Risk Management",def:"The process of identifying, quantifying, and prioritizing security vulnerabilities in systems and software.",related:["risk assessment","penetration testing"],conf:0.89,senses:[],triples:[{subject:"vulnerability assessment",predicate:"narrower",object:"risk assessment",type:"hierarchical"},{subject:"vulnerability assessment",predicate:"related",object:"penetration testing",type:"semantic"}]},
+  {id:"olex-005",term:"security breach",source:"onet",status:"validated",freq:19,stigs:0,cat:"Threat Detection",def:"An incident that results in unauthorized access of data, applications, services, networks, or devices.",related:["incident response","indicators of compromise"],conf:0.93,senses:[],triples:[{subject:"security breach",predicate:"related",object:"incident response",type:"semantic"},{subject:"security breach",predicate:"related",object:"indicators of compromise",type:"semantic"}]},
+  {id:"olex-006",term:"data backup",source:"onet",status:"candidate",freq:15,stigs:0,cat:"Operations",def:"The process of copying and archiving data to a secondary location for preservation and disaster recovery.",related:["disaster recovery"],conf:0.72,senses:[],triples:[]},
+  {id:"olex-007",term:"penetration testing",source:"onet",status:"validated",freq:17,stigs:0,cat:"Risk Management",def:"Authorized simulated cyberattack on a computer system to evaluate security posture and identify exploitable weaknesses.",related:["vulnerability assessment"],conf:0.95,senses:[],triples:[{subject:"penetration testing",predicate:"related",object:"vulnerability assessment",type:"semantic"}]},
+  {id:"olex-008",term:"security settings",source:"onet",status:"candidate",freq:12,stigs:0,cat:"Access Management",def:"Configuration parameters that control authentication, authorization, and access control policies for systems and applications.",related:["access control","configuration baseline"],conf:0.68,senses:[],triples:[{subject:"security settings",predicate:"related",object:"access control",type:"semantic"}]},
+];
+
+// O*Net exception queue
+const ONET_EXC = [
+  {id:"oexc-1",roleId:"15-1212.00",itemType:"task",itemId:"t3",text:"Install security measures and operate software to protect systems",proposedTags:["security software","system protection"],council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},reason:"Council split 2-2 on whether 'security measures' is compositional or a domain MWE."},
+  {id:"oexc-2",roleId:"15-1231.00",itemType:"task",itemId:"t3",text:"Analyze and report computer network security breaches",proposedTags:["security breach","network analysis"],council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},reason:"'computer network security breaches' — should this be one MWE or two overlapping?"},
+  {id:"oexc-3",roleId:"15-1212.00",itemType:"activity",itemId:"wa3",text:"Getting Information",proposedTags:["information gathering"],council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},reason:"'Getting Information' is too generic to be a meaningful MWE in the security context."},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 1: LIBRARY
+// ═══════════════════════════════════════════════════════════════
+
+function OnetLibraryPage({nav, isAdmin}) {
+  const [view,setView]=useState("my");
+  const [search,setSearch]=useState("");
+  const [catFilter,setCatFilter]=useState("all");
+  const cats=[...new Set(ONET_CATALOG.map(o=>o.category))].sort();
+  const filtered=useMemo(()=>{
+    return ONET_CATALOG.filter(o=>{
+      if(view==="my"&&o.status!=="ingested")return false;
+      if(catFilter!=="all"&&o.category!==catFilter)return false;
+      if(search){const s=search.toLowerCase();if(!o.title.toLowerCase().includes(s)&&!o.id.includes(s)&&!o.category.toLowerCase().includes(s))return false;}
+      return true;
+    });
+  },[view,search,catFilter]);
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Users size={18}/>O*Net Role Library</h1><p className="text-xs text-slate-500">{ONET_CATALOG.length} occupations — {ONET_INGESTED.length} ingested</p></div>
+    </div>
+    <div className="flex items-center gap-2">
+      <button onClick={()=>setView("my")} className={`text-xs px-3 py-1.5 rounded-lg font-medium border transition-all ${view==="my"?"bg-blue-50 text-blue-700 border-blue-200":"bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}>My Roles ({ONET_INGESTED.length})</button>
+      <button onClick={()=>setView("catalog")} className={`text-xs px-3 py-1.5 rounded-lg font-medium border transition-all ${view==="catalog"?"bg-blue-50 text-blue-700 border-blue-200":"bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}>O*Net Catalog ({ONET_CATALOG.length})</button>
+      <div className="relative flex-1 max-w-xs ml-auto"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Search roles..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+      <select value={catFilter} onChange={e=>setCatFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Categories</option>{cats.map(c=><option key={c} value={c}>{c}</option>)}</select>
+    </div>
+    <div className="space-y-3">{filtered.map(o=>{
+      const totalItems=[...o.tasks,...o.work_activities];
+      const taggedCount=totalItems.filter(i=>i.tagged).length;
+      const pct=totalItems.length>0?Math.round(taggedCount/totalItems.length*100):0;
+      return (<div key={o.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 hover:shadow-sm transition-all">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center"><Users size={16} className="text-white"/></div>
+            <div>
+              <div className="flex items-center gap-2"><h3 className="text-sm font-semibold text-slate-900">{o.title}</h3>
+                {o.bright_outlook&&<span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center gap-0.5"><TrendingUp size={8}/>Bright Outlook</span>}
+                {o.status==="ingested"&&<span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold">Ingested</span>}
+              </div>
+              <p className="text-[10px] text-slate-500">{o.id} • {o.category}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {o.status==="ingested"?<button onClick={()=>nav("onet-dashboard")} className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><BarChart3 size={12}/>View</button>
+              :<button className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium border border-blue-200 flex items-center gap-1"><Upload size={12}/>Ingest</button>}
+          </div>
+        </div>
+        <p className="text-[11px] text-slate-600 mb-3">{o.description}</p>
+        <div className="flex items-center gap-4 text-[10px] text-slate-500">
+          <span className="flex items-center gap-1"><DollarSign size={10}/>{o.median_salary}</span>
+          <span className="flex items-center gap-1"><Users size={10}/>{o.employment} employed</span>
+          <span className="flex items-center gap-1"><TrendingUp size={10}/>{o.growth} growth</span>
+          {o.status==="ingested"&&<><span className="flex items-center gap-1"><Tag size={10}/>{taggedCount}/{totalItems.length} tagged</span>
+          <div className="flex items-center gap-1 ml-auto"><div className="w-16 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className={`h-full rounded-full ${pct>=80?"bg-emerald-500":pct>=50?"bg-amber-500":"bg-red-500"}`} style={{width:`${pct}%`}}/></div><span className="font-semibold">{pct}%</span></div></>}
+        </div>
+      </div>);
+    })}</div>
+    {filtered.length===0&&<div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Users size={36} className="mx-auto text-slate-300 mb-2"/><h3 className="text-sm font-semibold text-slate-700">No matching roles</h3></div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 2: DASHBOARD (per-role)
+// ═══════════════════════════════════════════════════════════════
+
+function OnetDashboardPage({nav, isAdmin}) {
+  const role=ONET_CATALOG[0]; // Default to Info Sec Analysts
+  const allItems=[...role.tasks,...role.work_activities];
+  const taggedCount=allItems.filter(i=>i.tagged).length;
+  const taskTagged=role.tasks.filter(t=>t.tagged).length;
+  const actTagged=role.work_activities.filter(a=>a.tagged).length;
+
+  const Ring=({pct,size=80,stroke=8,color="text-blue-500"})=>{const r=(size-stroke)/2;const circ=2*Math.PI*r;const off=circ*(1-pct/100);return(
+    <svg width={size} height={size} className="transform -rotate-90"><circle cx={size/2} cy={size/2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} className="text-slate-100"/><circle cx={size/2} cy={size/2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round" className={color}/></svg>
+  )};
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Briefcase size={18}/>{role.title}</h1>
+        <p className="text-xs text-slate-500">{role.id} • {role.category} • {role.median_salary} median salary • {role.growth} projected growth</p>
+      </div>
+      {role.bright_outlook&&<span className="text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center gap-1"><TrendingUp size={12}/>Bright Outlook</span>}
+    </div>
+    {/* Summary row */}
+    <div className="grid grid-cols-4 gap-3">
+      <div className="bg-white rounded-xl border border-slate-200 p-3 text-center"><div className="text-[11px] text-slate-500 mb-1">Tasks</div><div className="text-xl font-bold text-slate-900">{role.tasks.length}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3 text-center"><div className="text-[11px] text-slate-500 mb-1">Work Activities</div><div className="text-xl font-bold text-slate-900">{role.work_activities.length}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3 text-center"><div className="text-[11px] text-slate-500 mb-1">Skills</div><div className="text-xl font-bold text-slate-900">{role.skills.length}</div></div>
+      <div className="bg-white rounded-xl border border-slate-200 p-3 text-center"><div className="text-[11px] text-slate-500 mb-1">Knowledge Areas</div><div className="text-xl font-bold text-slate-900">{role.knowledge.length}</div></div>
+    </div>
+    {/* Completion rings + bars */}
+    <div className="grid grid-cols-3 gap-4">
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3">Task Tagging</h3>
+        <div className="flex items-center gap-4">
+          <div className="relative"><Ring pct={Math.round(taskTagged/role.tasks.length*100)} color="text-blue-500"/><div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-900">{Math.round(taskTagged/role.tasks.length*100)}%</div></div>
+          <div className="text-[11px] text-slate-500 space-y-1"><div>{taskTagged} of {role.tasks.length} tagged</div><div>{role.tasks.length-taskTagged} remaining</div></div>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3">Activity Tagging</h3>
+        <div className="flex items-center gap-4">
+          <div className="relative"><Ring pct={Math.round(actTagged/role.work_activities.length*100)} color="text-violet-500"/><div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-900">{Math.round(actTagged/role.work_activities.length*100)}%</div></div>
+          <div className="text-[11px] text-slate-500 space-y-1"><div>{actTagged} of {role.work_activities.length} tagged</div><div>{role.work_activities.length-actTagged} remaining</div></div>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3">Overall Progress</h3>
+        <div className="flex items-center gap-4">
+          <div className="relative"><Ring pct={Math.round(taggedCount/allItems.length*100)} color="text-emerald-500"/><div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-900">{Math.round(taggedCount/allItems.length*100)}%</div></div>
+          <div className="text-[11px] text-slate-500 space-y-1"><div>{taggedCount} of {allItems.length} total items</div><div>{allItems.length-taggedCount} remaining</div></div>
+        </div>
+      </div>
+    </div>
+    {/* Skills & Knowledge */}
+    <div className="grid grid-cols-2 gap-4">
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-1.5"><Target size={13}/>Skills (by Importance)</h3>
+        <div className="space-y-2">{role.skills.map((s,i)=><div key={i} className="flex items-center gap-2"><span className="text-[11px] text-slate-600 w-36 shrink-0 truncate">{s.name}</span><div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-500" style={{width:`${s.importance/5*100}%`}}/></div><span className="text-[10px] text-slate-500 font-semibold tabular-nums w-6">{s.importance}</span></div>)}</div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-1.5"><BookOpen size={13}/>Knowledge Areas (by Importance)</h3>
+        <div className="space-y-2">{role.knowledge.map((k,i)=><div key={i} className="flex items-center gap-2"><span className="text-[11px] text-slate-600 w-36 shrink-0 truncate">{k.name}</span><div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-violet-500" style={{width:`${k.importance/5*100}%`}}/></div><span className="text-[10px] text-slate-500 font-semibold tabular-nums w-6">{k.importance}</span></div>)}</div>
+      </div>
+    </div>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 3: PIPELINE (task/activity tagging)
+// ═══════════════════════════════════════════════════════════════
+
+function OnetPipelinePage({nav, isAdmin}) {
+  const role=ONET_CATALOG[0];
+  const [typeFilter,setTypeFilter]=useState("all");
+  const [tagFilter,setTagFilter]=useState("all");
+  const [expanded,setExpanded]=useState(null);
+  const allItems=useMemo(()=>{
+    const tasks=role.tasks.map(t=>({...t,type:"Task"}));
+    const acts=role.work_activities.map(a=>({...a,type:"Activity"}));
+    let items=[...tasks,...acts];
+    if(typeFilter!=="all") items=items.filter(i=>i.type===typeFilter);
+    if(tagFilter==="tagged") items=items.filter(i=>i.tagged);
+    if(tagFilter==="untagged") items=items.filter(i=>!i.tagged);
+    return items;
+  },[typeFilter,tagFilter]);
+  const totalTagged=allItems.filter(i=>i.tagged).length;
+  const pct=allItems.length>0?Math.round(totalTagged/allItems.length*100):0;
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Activity size={18}/>O*Net Tagging Pipeline</h1><p className="text-xs text-slate-500">{role.title} ({role.id}) — {allItems.length} items</p></div>
+      <div className="flex items-center gap-2"><div className="w-24 h-2 rounded-full bg-slate-200 overflow-hidden"><div className={`h-full rounded-full ${pct>=80?"bg-emerald-500":pct>=50?"bg-amber-500":"bg-blue-500"}`} style={{width:`${pct}%`}}/></div><span className="text-xs font-semibold text-slate-700">{pct}% tagged</span></div>
+    </div>
+    <div className="flex items-center gap-2">
+      <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Types</option><option value="Task">Tasks</option><option value="Activity">Work Activities</option></select>
+      <select value={tagFilter} onChange={e=>setTagFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Status</option><option value="tagged">Tagged</option><option value="untagged">Untagged</option></select>
+      <span className="text-[11px] text-slate-400 ml-auto">{allItems.length} items</span>
+    </div>
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="grid grid-cols-12 gap-px bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
+        <div className="col-span-5 bg-slate-50 px-3 py-2">Item</div>
+        <div className="col-span-1 bg-slate-50 px-3 py-2">Type</div>
+        <div className="col-span-1 bg-slate-50 px-3 py-2">Imp.</div>
+        <div className="col-span-2 bg-slate-50 px-3 py-2">MWE Tags</div>
+        <div className="col-span-2 bg-slate-50 px-3 py-2">Status</div>
+        <div className="col-span-1 bg-slate-50 px-3 py-2"></div>
+      </div>
+      <div className="divide-y divide-slate-100">{allItems.map(item=>{
+        const isExp=expanded===item.id+item.type;
+        const stColor=item.tagged?"text-emerald-700":"text-slate-400";
+        return (<div key={item.id+item.type}>
+          <button onClick={()=>setExpanded(isExp?null:item.id+item.type)} className="w-full grid grid-cols-12 gap-px text-[11px] hover:bg-blue-50/50 transition-colors">
+            <div className="col-span-5 px-3 py-2.5 text-left text-slate-700 truncate">{item.text}</div>
+            <div className="col-span-1 px-3 py-2.5"><span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${item.type==="Task"?"bg-blue-100 text-blue-700":"bg-violet-100 text-violet-700"}`}>{item.type}</span></div>
+            <div className="col-span-1 px-3 py-2.5 font-semibold text-slate-700 tabular-nums">{item.importance}</div>
+            <div className="col-span-2 px-3 py-2.5"><div className="flex flex-wrap gap-0.5">{item.mwe_tags.length>0?item.mwe_tags.map((t,i)=><span key={i} className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-medium border border-emerald-200">{t}</span>):<span className="text-slate-300">—</span>}</div></div>
+            <div className="col-span-2 px-3 py-2.5"><SB stage={item.tagged?"completed":item.status==="in_progress"?"mwe_tag_pass_1":"parse_finding"} status={item.tagged?"completed":item.status}/></div>
+            <div className="col-span-1 px-3 py-2.5 text-right">{isExp?<ChevronDown size={12} className="text-slate-400"/>:<ChevronRight size={12} className="text-slate-400"/>}</div>
+          </button>
+          {isExp&&<div className="px-4 py-3 bg-slate-50 border-t border-slate-100">
+            <div className="grid grid-cols-3 gap-4">
+              <div><p className="text-[10px] font-semibold text-slate-500 uppercase mb-1">Full Text</p><p className="text-[11px] text-slate-700">{item.text}</p></div>
+              {isAdmin&&Object.keys(item.council).length>0&&<div><p className="text-[10px] font-semibold text-slate-500 uppercase mb-1">Council Votes</p><div className="flex gap-1.5">{Object.entries(item.council).map(([n,v])=><AA key={n} name={n} vote={v} sz="sm"/>)}</div></div>}
+              <div><p className="text-[10px] font-semibold text-slate-500 uppercase mb-1">Tags</p>{item.mwe_tags.length>0?<div className="flex flex-wrap gap-1">{item.mwe_tags.map((t,i)=><MC key={i} term={t} v={true}/>)}</div>:<p className="text-[11px] text-slate-400 italic">Not yet tagged</p>}</div>
+            </div>
+          </div>}
+        </div>);
+      })}</div>
+    </div>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 4: EXCEPTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function OnetExceptionsPage({nav, isAdmin}) {
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><AlertTriangle size={18}/>O*Net Exceptions</h1><p className="text-xs text-slate-500">{ONET_EXC.length} items requiring review</p></div>
+    </div>
+    <div className="space-y-3">{ONET_EXC.map(exc=>{
+      const role=ONET_CATALOG.find(o=>o.id===exc.roleId);
+      const votes=Object.entries(exc.council);
+      const tagCount=votes.filter(([,v])=>v==="TAG").length;
+      return (<div key={exc.id} className="bg-white rounded-xl border border-amber-200 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${exc.itemType==="task"?"bg-blue-100 text-blue-700":"bg-violet-100 text-violet-700"}`}>{exc.itemType}</span>
+            <span className="text-sm font-semibold text-slate-900">{exc.text}</span>
+          </div>
+          {isAdmin&&<div className="flex items-center gap-2">
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><ThumbsUp size={11}/>Approve</button>
+            <button className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-medium border border-red-200 flex items-center gap-1"><XCircle size={11}/>Reject</button>
+          </div>}
+        </div>
+        <p className="text-[11px] text-slate-600">{exc.reason}</p>
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] text-slate-500">{role?.title} ({exc.roleId})</span>
+          <div className="flex items-center gap-1">{exc.proposedTags.map((t,i)=><span key={i} className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 text-[9px] font-medium border border-amber-200">{t}</span>)}</div>
+          {isAdmin&&<div className="flex items-center gap-1 ml-auto">{votes.map(([n,v])=><div key={n} className={`w-4 h-4 rounded-full text-[7px] font-bold flex items-center justify-center ${v==="TAG"?"bg-emerald-400 text-white":"bg-red-300 text-white"}`}>{n[0]}</div>)}<span className="text-[10px] text-slate-500 ml-1">{tagCount}/4</span></div>}
+        </div>
+      </div>);
+    })}</div>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 5: LEXICON
+// ═══════════════════════════════════════════════════════════════
+
+function OnetLexiconPage({nav, isAdmin}) {
+  const [search,setSearch]=useState("");
+  const [expanded,setExpanded]=useState(null);
+  const filtered=useMemo(()=>ONET_LEX.filter(l=>{
+    if(search&&!l.term.toLowerCase().includes(search.toLowerCase())&&!l.def.toLowerCase().includes(search.toLowerCase()))return false;
+    return true;
+  }),[search]);
+  const stColor={validated:{bg:"bg-emerald-100",text:"text-emerald-700",border:"border-emerald-200"},candidate:{bg:"bg-amber-100",text:"text-amber-700",border:"border-amber-200"}};
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><BookOpen size={18}/>O*Net Lexicon</h1><p className="text-xs text-slate-500">{ONET_LEX.length} occupation-domain terms</p></div>
+    </div>
+    <div className="relative max-w-sm"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Search O*Net terms..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+    <div className="space-y-2">{filtered.map(l=>{
+      const sc=stColor[l.status]||stColor.candidate;
+      const isExp=expanded===l.id;
+      return (<div key={l.id} className={`bg-white rounded-xl border ${isExp?"border-blue-300 shadow-sm":"border-slate-200"} overflow-hidden transition-all`}>
+        <button onClick={()=>setExpanded(isExp?null:l.id)} className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-sm font-semibold text-slate-900 font-mono">{l.term}</span>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-700 border border-cyan-200 font-medium">O*Net</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">{l.cat}</span>
+              </div>
+              <p className="text-[11px] text-slate-500 line-clamp-1">{l.def}</p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="text-center"><div className="text-sm font-bold text-slate-700 tabular-nums">{l.freq}</div><div className="text-[9px] text-slate-400">hits</div></div>
+              <CB s={l.conf}/>
+              {isExp?<ChevronDown size={14} className="text-slate-400"/>:<ChevronRight size={14} className="text-slate-400"/>}
+            </div>
+          </div>
+        </button>
+        {isExp&&<div className="px-4 pb-4 border-t border-slate-100 pt-3 space-y-3">
+          <p className="text-xs text-slate-700 leading-relaxed">{l.def}</p>
+          {l.senses.length>0&&<div className="space-y-2 pt-2 border-t border-slate-100">
+            <p className="text-[10px] font-semibold text-indigo-600 uppercase">Senses ({l.senses.length})</p>
+            {l.senses.map(s=><div key={s.sense_number} className="flex gap-2 pl-2 border-l-2 border-indigo-200"><div className="shrink-0 w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-bold">{s.sense_number}</div><div><span className="text-[11px] font-semibold text-slate-800">{s.sense_label}</span><p className="text-[10px] text-slate-600">{s.definition}</p></div></div>)}
+          </div>}
+          <div><p className="text-[10px] font-semibold text-slate-500 uppercase mb-1">Related</p><div className="flex flex-wrap gap-1">{l.related.map((r,i)=><span key={i} className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{r}</span>)}</div></div>
+        </div>}
+      </div>);
+    })}</div>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// O*NET PAGE 6: ROLE DETAIL
+// ═══════════════════════════════════════════════════════════════
+
+function OnetRoleDetailPage({nav, isAdmin}) {
+  const role=ONET_CATALOG[0];
+  const [tab,setTab]=useState("overview");
+  const tabs=[{k:"overview",l:"Overview"},{k:"tasks",l:"Tasks"},{k:"activities",l:"Work Activities"},{k:"skills",l:"Skills & Knowledge"},{k:"terms",l:"Term Connections"}];
+  // Find STIG terms that connect to this role's task tags
+  const roleTags=[...new Set([...role.tasks,...role.work_activities].flatMap(i=>i.mwe_tags))];
+  const connectedStigTerms=LEX.filter(l=>roleTags.some(rt=>l.term.includes(rt)||l.related.some(r=>r.includes(rt))));
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Briefcase size={18}/>{role.title}</h1><p className="text-xs text-slate-500">{role.id} • {role.category}</p></div>
+      {role.bright_outlook&&<span className="text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center gap-1"><TrendingUp size={12}/>Bright Outlook</span>}
+    </div>
+    <div className="flex items-center gap-1 border-b border-slate-200 pb-px">{tabs.map(t=><button key={t.k} onClick={()=>setTab(t.k)} className={`px-3 py-2 text-xs font-medium border-b-2 transition-all ${tab===t.k?"border-blue-500 text-blue-700":"border-transparent text-slate-500 hover:text-slate-700"}`}>{t.l}</button>)}</div>
+
+    {tab==="overview"&&<div className="space-y-4">
+      <p className="text-xs text-slate-700 leading-relaxed">{role.description}</p>
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="text-[11px] text-slate-500 mb-1">Median Salary</div><div className="text-lg font-bold text-slate-900">{role.median_salary}</div></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="text-[11px] text-slate-500 mb-1">Employment</div><div className="text-lg font-bold text-slate-900">{role.employment}</div></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="text-[11px] text-slate-500 mb-1">Growth Rate</div><div className="text-lg font-bold text-emerald-600">{role.growth}</div></div>
+      </div>
+    </div>}
+
+    {tab==="tasks"&&<div className="space-y-2">{role.tasks.map(t=>(
+      <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-3">
+        <div className="flex items-center justify-between mb-1"><span className="text-xs text-slate-700">{t.text}</span><span className="text-[10px] font-semibold text-slate-500">Imp: {t.importance}</span></div>
+        <div className="flex items-center gap-1">{t.mwe_tags.length>0?t.mwe_tags.map((tag,i)=><MC key={i} term={tag} v={true}/>):<span className="text-[10px] text-slate-400 italic">Not tagged</span>}</div>
+      </div>
+    ))}</div>}
+
+    {tab==="activities"&&<div className="space-y-2">{role.work_activities.map(a=>(
+      <div key={a.id} className="bg-white rounded-xl border border-slate-200 p-3">
+        <div className="flex items-center justify-between mb-1"><span className="text-xs text-slate-700">{a.text}</span><span className="text-[10px] font-semibold text-slate-500">Imp: {a.importance}</span></div>
+        <div className="flex items-center gap-1">{a.mwe_tags.length>0?a.mwe_tags.map((tag,i)=><MC key={i} term={tag} v={true}/>):<span className="text-[10px] text-slate-400 italic">Not tagged</span>}</div>
+      </div>
+    ))}</div>}
+
+    {tab==="skills"&&<div className="grid grid-cols-2 gap-4">
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-1.5"><Target size={13}/>Skills</h3>
+        <div className="space-y-2">{role.skills.map((s,i)=><div key={i} className="flex items-center gap-2"><span className="text-[11px] text-slate-600 w-32 shrink-0 truncate">{s.name}</span><div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-500" style={{width:`${s.importance/5*100}%`}}/></div><span className="text-[10px] text-slate-500 font-semibold tabular-nums">{s.importance}</span></div>)}</div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-1.5"><BookOpen size={13}/>Knowledge Areas</h3>
+        <div className="space-y-2">{role.knowledge.map((k,i)=><div key={i} className="flex items-center gap-2"><span className="text-[11px] text-slate-600 w-32 shrink-0 truncate">{k.name}</span><div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-violet-500" style={{width:`${k.importance/5*100}%`}}/></div><span className="text-[10px] text-slate-500 font-semibold tabular-nums">{k.importance}</span></div>)}</div>
+      </div>
+    </div>}
+
+    {tab==="terms"&&<div className="space-y-4">
+      <p className="text-xs text-slate-500">STIG terms connected to this role through task/activity MWE tags ({connectedStigTerms.length} found)</p>
+      <div className="space-y-2">{connectedStigTerms.length>0?connectedStigTerms.map(l=>(
+        <div key={l.id} className="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3">
+          <span className="text-xs font-semibold text-slate-900 font-mono w-40">{l.term}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">STIG</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{l.cat}</span>
+          <p className="text-[10px] text-slate-500 flex-1 truncate">{l.def}</p>
+          <CB s={l.conf}/>
+        </div>
+      )):<div className="bg-white rounded-xl border border-slate-200 py-8 text-center"><p className="text-xs text-slate-500">No connected STIG terms found for untagged items.</p></div>}</div>
+    </div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NEXUS LEXICON (Unified)
+// ═══════════════════════════════════════════════════════════════
+
+function NexusLexiconPage({nav, isAdmin}) {
+  const [nlTab,setNlTab]=useState("glossary");
+  const [search,setSearch]=useState("");
+  const [sourceFilter,setSourceFilter]=useState("all");
+
+  // Merge STIG + O*Net terms — mark shared terms
+  const MERGED = useMemo(()=>{
+    const merged = LEX.map(l=>({...l,source:"stig",sources:["stig"]}));
+    ONET_LEX.forEach(ol=>{
+      // Check for overlap by term name
+      const existing = merged.find(m=>m.term.toLowerCase()===ol.term.toLowerCase());
+      if(existing){
+        existing.sources.push("onet");
+        existing.source="both";
+      } else {
+        merged.push({...ol,sources:["onet"],pass1:false,pass2:false,stigs:0,council:{},cciRefs:[],senses:ol.senses||[],triples:ol.triples||[]});
+      }
+    });
+    return merged;
+  },[]);
+
+  const filtered=useMemo(()=>{
+    let r=MERGED;
+    if(sourceFilter!=="all") r=r.filter(l=>l.source===sourceFilter||l.sources.includes(sourceFilter));
+    if(search) r=r.filter(l=>l.term.toLowerCase().includes(search.toLowerCase())||l.def.toLowerCase().includes(search.toLowerCase()));
+    return r;
+  },[search,sourceFilter,MERGED]);
+
+  const stigCount=MERGED.filter(m=>m.sources.includes("stig")).length;
+  const onetCount=MERGED.filter(m=>m.sources.includes("onet")).length;
+  const bothCount=MERGED.filter(m=>m.source==="both").length;
+  const stigOnly=MERGED.filter(m=>m.sources.length===1&&m.sources[0]==="stig");
+  const onetOnly=MERGED.filter(m=>m.sources.length===1&&m.sources[0]==="onet");
+
+  const stColor={validated:{bg:"bg-emerald-100",text:"text-emerald-700",border:"border-emerald-200"},candidate:{bg:"bg-amber-100",text:"text-amber-700",border:"border-amber-200"},contested:{bg:"bg-red-100",text:"text-red-700",border:"border-red-200"}};
+  const srcBadge={stig:{bg:"bg-indigo-50",text:"text-indigo-700",border:"border-indigo-200",label:"STIG"},onet:{bg:"bg-cyan-50",text:"text-cyan-700",border:"border-cyan-200",label:"O*Net"},both:{bg:"bg-emerald-50",text:"text-emerald-700",border:"border-emerald-200",label:"Both"}};
+
+  const tabs=[{k:"glossary",l:"Glossary",i:BookOpen},{k:"crosswalk",l:"Crosswalk",i:ArrowUpDown},{k:"gap",l:"Gap Analysis",i:Target},{k:"graph",l:"Knowledge Graph",i:Network}];
+  if(isAdmin) tabs.push({k:"manage",l:"Manage",i:Pencil});
+
+  // Crosswalk data: STIG terms that map to O*Net skills/knowledge
+  const CROSSWALK = useMemo(()=>{
+    const mappings=[];
+    ONET_INGESTED.forEach(role=>{
+      role.skills.forEach(sk=>{
+        const matchingTerms=LEX.filter(l=>l.term.toLowerCase().includes(sk.name.toLowerCase().split(" ")[0])||sk.name.toLowerCase().includes(l.term.toLowerCase().split(" ")[0]));
+        matchingTerms.forEach(t=>{mappings.push({stigTerm:t.term,onetAttr:sk.name,onetType:"Skill",role:role.title,importance:sk.importance});});
+      });
+      role.knowledge.forEach(kn=>{
+        const matchingTerms=LEX.filter(l=>l.cat.toLowerCase().includes(kn.name.toLowerCase().split(" ")[0]));
+        matchingTerms.forEach(t=>{mappings.push({stigTerm:t.term,onetAttr:kn.name,onetType:"Knowledge",role:role.title,importance:kn.importance});});
+      });
+    });
+    // Add some hardcoded meaningful crosswalks
+    return [
+      {stigTerm:"access control",onetAttr:"Information Security",onetType:"Skill",role:"Information Security Analysts",importance:4.8},
+      {stigTerm:"network firewall",onetAttr:"Network Security",onetType:"Skill",role:"Information Security Analysts",importance:4.5},
+      {stigTerm:"audit record",onetAttr:"Information Security",onetType:"Skill",role:"Information Security Analysts",importance:4.8},
+      {stigTerm:"cryptographic module",onetAttr:"Network Security",onetType:"Skill",role:"Information Security Analysts",importance:4.5},
+      {stigTerm:"remote access",onetAttr:"Telecommunications",onetType:"Knowledge",role:"Information Security Analysts",importance:3.9},
+      {stigTerm:"file integrity",onetAttr:"Vulnerability Assessment",onetType:"Skill",role:"Information Security Analysts",importance:4.0},
+      {stigTerm:"session lock",onetAttr:"Information Security",onetType:"Skill",role:"Information Security Analysts",importance:4.8},
+      {stigTerm:"privilege escalation",onetAttr:"Vulnerability Assessment",onetType:"Skill",role:"Information Security Analysts",importance:4.0},
+      {stigTerm:"indicators of compromise",onetAttr:"Incident Response",onetType:"Skill",role:"Information Security Analysts",importance:4.2},
+      {stigTerm:"access control",onetAttr:"Network Administration",onetType:"Skill",role:"Computer Network Support Specialists",importance:4.3},
+      ...mappings.slice(0,5),
+    ];
+  },[]);
+
+  const graphTerms=useMemo(()=>MERGED.filter(l=>(l.triples||[]).length>0),[MERGED]);
+  const graphTriples=useMemo(()=>MERGED.flatMap(l=>l.triples||[]),[MERGED]);
+
+  return (<div className="space-y-5">
+    <div className="flex items-center justify-between">
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Database size={18}/>Nexus Lexicon</h1><p className="text-xs text-slate-500">Unified terminology — {MERGED.length} terms ({stigCount} STIG, {onetCount} O*Net, {bothCount} shared)</p></div>
+    </div>
+    <div className="grid grid-cols-4 gap-3">
+      <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Database size={13} className="text-slate-400"/><span className="text-[11px] text-slate-500">Total Terms</span></div><div className="text-xl font-bold text-slate-900 tabular-nums">{MERGED.length}</div></div>
+      <div className="bg-white rounded-xl border border-indigo-200 p-3"><div className="flex items-center gap-2 mb-1"><Shield size={13} className="text-indigo-500"/><span className="text-[11px] text-slate-500">STIG Terms</span></div><div className="text-xl font-bold text-indigo-600 tabular-nums">{stigCount}</div></div>
+      <div className="bg-white rounded-xl border border-cyan-200 p-3"><div className="flex items-center gap-2 mb-1"><Users size={13} className="text-cyan-500"/><span className="text-[11px] text-slate-500">O*Net Terms</span></div><div className="text-xl font-bold text-cyan-600 tabular-nums">{onetCount}</div></div>
+      <div className="bg-white rounded-xl border border-emerald-200 p-3"><div className="flex items-center gap-2 mb-1"><Link size={13} className="text-emerald-500"/><span className="text-[11px] text-slate-500">Shared</span></div><div className="text-xl font-bold text-emerald-600 tabular-nums">{bothCount}</div></div>
+    </div>
+    <div className="flex items-center gap-1 border-b border-slate-200 pb-px">{tabs.map(t=><button key={t.k} onClick={()=>setNlTab(t.k)} className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-all ${nlTab===t.k?"border-blue-500 text-blue-700":"border-transparent text-slate-500 hover:text-slate-700"}`}><t.i size={13}/>{t.l}</button>)}</div>
+
+    {/* ════════ GLOSSARY ════════ */}
+    {nlTab==="glossary"&&<div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-xs"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Search unified lexicon..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+        <select value={sourceFilter} onChange={e=>setSourceFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Sources</option><option value="stig">STIG Only</option><option value="onet">O*Net Only</option><option value="both">Shared</option></select>
+        <span className="text-[11px] text-slate-400 ml-auto">{filtered.length} terms</span>
+      </div>
+      <div className="space-y-2">{filtered.map(l=>{
+        const sc=stColor[l.status]||stColor.candidate;
+        const sb=srcBadge[l.source]||srcBadge.stig;
+        return (<div key={l.id} className="bg-white rounded-xl border border-slate-200 p-3 hover:border-blue-200 transition-all">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-semibold text-slate-900 font-mono">{l.term}</span>
+            <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold border ${sb.bg} ${sb.text} ${sb.border}`}>{sb.label}</span>
+            <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{l.cat}</span>
+            <span className="text-[10px] text-slate-400 ml-auto">{l.freq} hits</span>
+          </div>
+          <p className="text-[11px] text-slate-600 line-clamp-1">{l.def}</p>
+        </div>);
+      })}</div>
+    </div>}
+
+    {/* ════════ CROSSWALK ════════ */}
+    {nlTab==="crosswalk"&&<div className="space-y-4">
+      <p className="text-xs text-slate-500">Mappings between STIG security terms and O*Net occupation skills/knowledge areas ({CROSSWALK.length} connections)</p>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="grid grid-cols-5 gap-px bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
+          <div className="bg-slate-50 px-3 py-2">STIG Term</div>
+          <div className="bg-slate-50 px-3 py-2">O*Net Attribute</div>
+          <div className="bg-slate-50 px-3 py-2">Type</div>
+          <div className="bg-slate-50 px-3 py-2">Role</div>
+          <div className="bg-slate-50 px-3 py-2">Importance</div>
+        </div>
+        <div className="max-h-[400px] overflow-y-auto divide-y divide-slate-100">{CROSSWALK.map((cw,i)=>(
+          <div key={i} className="grid grid-cols-5 gap-px text-[11px] hover:bg-blue-50/50 transition-colors">
+            <div className="px-3 py-2 font-mono text-indigo-700">{cw.stigTerm}</div>
+            <div className="px-3 py-2 font-mono text-cyan-700">{cw.onetAttr}</div>
+            <div className="px-3 py-2"><span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${cw.onetType==="Skill"?"bg-blue-100 text-blue-700":"bg-violet-100 text-violet-700"}`}>{cw.onetType}</span></div>
+            <div className="px-3 py-2 text-slate-600 truncate">{cw.role}</div>
+            <div className="px-3 py-2"><div className="flex items-center gap-1"><div className="w-12 h-1.5 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-emerald-500" style={{width:`${cw.importance/5*100}%`}}/></div><span className="text-[10px] font-semibold text-slate-500">{cw.importance}</span></div></div>
+          </div>
+        ))}</div>
+      </div>
+    </div>}
+
+    {/* ════════ GAP ANALYSIS ════════ */}
+    {nlTab==="gap"&&<div className="space-y-4">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl border border-indigo-200 p-4">
+          <h3 className="text-xs font-semibold text-indigo-700 mb-1 flex items-center gap-1.5"><Shield size={13}/>STIG-Only Terms</h3>
+          <p className="text-[10px] text-slate-500 mb-3">Terms in STIGs with no O*Net coverage ({stigOnly.length})</p>
+          <div className="space-y-1 max-h-[250px] overflow-y-auto">{stigOnly.map(l=>(
+            <div key={l.id} className="flex items-center justify-between px-2 py-1 rounded bg-indigo-50/50">
+              <span className="text-[11px] font-mono text-slate-700">{l.term}</span>
+              <span className="text-[9px] text-slate-400">{l.cat}</span>
+            </div>
+          ))}</div>
+        </div>
+        <div className="bg-white rounded-xl border border-cyan-200 p-4">
+          <h3 className="text-xs font-semibold text-cyan-700 mb-1 flex items-center gap-1.5"><Users size={13}/>O*Net-Only Terms</h3>
+          <p className="text-[10px] text-slate-500 mb-3">Terms in O*Net with no STIG coverage ({onetOnly.length})</p>
+          <div className="space-y-1 max-h-[250px] overflow-y-auto">{onetOnly.map(l=>(
+            <div key={l.id} className="flex items-center justify-between px-2 py-1 rounded bg-cyan-50/50">
+              <span className="text-[11px] font-mono text-slate-700">{l.term}</span>
+              <span className="text-[9px] text-slate-400">{l.cat}</span>
+            </div>
+          ))}</div>
+        </div>
+        <div className="bg-white rounded-xl border border-emerald-200 p-4">
+          <h3 className="text-xs font-semibold text-emerald-700 mb-1 flex items-center gap-1.5"><Link size={13}/>Coverage Summary</h3>
+          <p className="text-[10px] text-slate-500 mb-3">Framework coverage statistics</p>
+          <div className="space-y-3">
+            <div><div className="flex items-center justify-between text-[11px] mb-1"><span className="text-slate-600">STIG coverage</span><span className="font-semibold text-slate-900">{stigCount}/{MERGED.length}</span></div><div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-indigo-500" style={{width:`${Math.round(stigCount/MERGED.length*100)}%`}}/></div></div>
+            <div><div className="flex items-center justify-between text-[11px] mb-1"><span className="text-slate-600">O*Net coverage</span><span className="font-semibold text-slate-900">{onetCount}/{MERGED.length}</span></div><div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-cyan-500" style={{width:`${Math.round(onetCount/MERGED.length*100)}%`}}/></div></div>
+            <div><div className="flex items-center justify-between text-[11px] mb-1"><span className="text-slate-600">Overlap rate</span><span className="font-semibold text-slate-900">{bothCount}/{MERGED.length} ({Math.round(bothCount/MERGED.length*100)}%)</span></div><div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-emerald-500" style={{width:`${Math.round(bothCount/MERGED.length*100)}%`}}/></div></div>
+            <div className="pt-2 border-t border-slate-100">
+              <p className="text-[10px] text-slate-500 mb-1">Category coverage</p>
+              {[...new Set(MERGED.map(m=>m.cat))].sort().slice(0,6).map(cat=>{const catTerms=MERGED.filter(m=>m.cat===cat);const catBoth=catTerms.filter(m=>m.source==="both").length;return(
+                <div key={cat} className="flex items-center justify-between text-[10px] py-0.5"><span className="text-slate-600">{cat}</span><span className="text-slate-500">{catTerms.length} terms {catBoth>0&&<span className="text-emerald-600">({catBoth} shared)</span>}</span></div>
+              );})}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>}
+
+    {/* ════════ KNOWLEDGE GRAPH ════════ */}
+    {nlTab==="graph"&&<div className="space-y-4">
+      <p className="text-xs text-slate-500">Cross-domain knowledge graph — STIG and O*Net terms connected through semantic relationships</p>
+      <ForceGraph terms={graphTerms} triples={graphTriples} width={720} height={420}/>
+    </div>}
+
+    {/* ════════ MANAGE ════════ */}
+    {nlTab==="manage"&&isAdmin&&<div className="space-y-4">
+      <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2"><Pencil size={14}/>Unified Lexicon Management</h2>
+      <p className="text-xs text-slate-500">Review cross-domain term proposals, resolve source conflicts, and manage the unified vocabulary.</p>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <h3 className="text-xs font-semibold text-slate-700 mb-3">Pending Cross-Domain Mappings</h3>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">access control</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">security settings</span><span className="text-[9px] text-slate-500">proposed synonym</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
+          <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">indicators of compromise</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">security breach</span><span className="text-[9px] text-slate-500">proposed related</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
+          <div className="flex items-center justify-between p-2 rounded-lg border border-amber-200 bg-amber-50/50"><div className="flex items-center gap-2"><span className="text-[11px] font-mono text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">file integrity</span><ArrowRight size={10} className="text-slate-400"/><span className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">vulnerability assessment</span><span className="text-[9px] text-slate-500">proposed related</span></div><div className="flex gap-1"><button className="text-[10px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Approve</button><button className="text-[10px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200">Reject</button></div></div>
+        </div>
+      </div>
+    </div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// APP SHELL — Collapsible Left Sidebar
 // ═══════════════════════════════════════════════════════════════
 
 const ROLES = { admin: "Mapping Team", user: "End User" };
 
 export default function NexusApp() {
-  const [page,setPage]=useState("library");
+  const [page,setPage]=useState("stig-library");
   const [role,setRole]=useState("admin");
+  const [sidebarOpen,setSidebarOpen]=useState({stigs:true,onet:false,nexus:false});
   const isAdmin = role === "admin";
-  const nav=[{k:"library",l:"Library",i:Library},{k:"dashboard",l:"Dashboard",i:BarChart3},{k:"pipeline",l:"Pipeline",i:Activity},{k:"exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},{k:"lexicon",l:"Lexicon",i:BookOpen,badge:LEX.length},{k:"finding",l:"Finding Detail",i:FileText}];
-  return (<div className="min-h-screen bg-slate-50">
-    <div className="bg-white border-b border-slate-200 px-6 py-2.5">
-      <div className="flex items-center justify-between max-w-6xl mx-auto">
-        <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center"><Database size={16} className="text-white"/></div><div><h1 className="text-sm font-bold text-slate-900">Nexus Platform</h1><p className="text-[10px] text-slate-500">Open Controls — Anduril NixOS STIG</p></div></div>
-        <div className="flex items-center gap-1">{nav.map(n=><button key={n.k} onClick={()=>setPage(n.k)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${page===n.k?"bg-blue-50 text-blue-700":"text-slate-500 hover:bg-slate-50"}`}><n.i size={13}/>{n.l}{n.badge&&<span className="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold">{n.badge}</span>}</button>)}</div>
+
+  const toggleSection=(key)=>setSidebarOpen(prev=>({...prev,[key]:!prev[key]}));
+
+  const stigNav=[
+    {k:"stig-library",l:"Library",i:Library},
+    {k:"stig-dashboard",l:"Dashboard",i:BarChart3},
+    {k:"stig-pipeline",l:"Pipeline",i:Activity},
+    {k:"stig-exceptions",l:"Exceptions",i:AlertTriangle,badge:EXC.length},
+    {k:"stig-lexicon",l:"Lexicon",i:BookOpen,badge:LEX.length},
+    {k:"stig-finding",l:"Finding Detail",i:FileText},
+  ];
+  const onetNav=[
+    {k:"onet-library",l:"Library",i:Library},
+    {k:"onet-dashboard",l:"Dashboard",i:BarChart3},
+    {k:"onet-pipeline",l:"Pipeline",i:Activity},
+    {k:"onet-exceptions",l:"Exceptions",i:AlertTriangle,badge:ONET_EXC.length},
+    {k:"onet-lexicon",l:"Lexicon",i:BookOpen,badge:ONET_LEX.length},
+    {k:"onet-role",l:"Role Detail",i:Briefcase},
+  ];
+
+  const NavItem=({item})=><button onClick={()=>setPage(item.k)} className={`w-full flex items-center gap-2 pl-9 pr-3 py-1.5 text-[11px] font-medium transition-all rounded-r-lg ${page===item.k?"bg-blue-50 text-blue-700 border-l-2 border-blue-500":"text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-l-2 border-transparent"}`}><item.i size={12}/>{item.l}{item.badge!=null&&<span className="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold ml-auto">{item.badge}</span>}</button>;
+
+  return (<div className="min-h-screen bg-slate-50 flex flex-col">
+    {/* Top header */}
+    <div className="bg-white border-b border-slate-200 px-4 py-2.5 shrink-0">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center"><Database size={16} className="text-white"/></div>
+          <div><h1 className="text-sm font-bold text-slate-900">Nexus Platform</h1><p className="text-[10px] text-slate-500">Open Controls — STIG + O*Net Intelligence</p></div>
+        </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setRole(role === "admin" ? "user" : "admin")} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${isAdmin ? "bg-violet-50 text-violet-700 border-violet-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
             {isAdmin ? <Shield size={11} /> : <Eye size={11} />}
@@ -1535,14 +2204,58 @@ export default function NexusApp() {
       </div>
     </div>
     {/* Role banner */}
-    {!isAdmin && <div className="bg-slate-100 border-b border-slate-200 px-6 py-1.5"><div className="max-w-6xl mx-auto flex items-center gap-2 text-[10px] text-slate-500"><Eye size={10} />Viewing as End User — some internal details are hidden<button onClick={() => setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
-    <div className="max-w-6xl mx-auto px-6 py-6">
-      {page==="library"&&<LibraryPage nav={setPage} isAdmin={isAdmin}/>}
-      {page==="dashboard"&&<DashboardPage nav={setPage} isAdmin={isAdmin}/>}
-      {page==="pipeline"&&<PipelinePage nav={setPage}/>}
-      {page==="exceptions"&&<ExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
-      {page==="lexicon"&&<LexiconPage nav={setPage} isAdmin={isAdmin}/>}
-      {page==="finding"&&<FindingPage nav={setPage} isAdmin={isAdmin}/>}
+    {!isAdmin && <div className="bg-slate-100 border-b border-slate-200 px-4 py-1.5 shrink-0"><div className="flex items-center gap-2 text-[10px] text-slate-500"><Eye size={10}/>Viewing as End User — some internal details are hidden<button onClick={()=>setRole("admin")} className="text-blue-600 hover:text-blue-800 font-medium ml-auto">Switch to Mapping Team</button></div></div>}
+    {/* Main layout: sidebar + content */}
+    <div className="flex flex-1 overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-56 bg-white border-r border-slate-200 overflow-y-auto shrink-0 py-3">
+        {/* STIGs group */}
+        <button onClick={()=>toggleSection("stigs")} className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all">
+          {sidebarOpen.stigs?<ChevronDown size={12} className="text-slate-400"/>:<ChevronRight size={12} className="text-slate-400"/>}
+          <Shield size={14} className="text-indigo-500"/>
+          <span>STIGs</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-600 font-bold ml-auto">{STIG_CATALOG.length}</span>
+        </button>
+        {sidebarOpen.stigs&&<div className="space-y-0.5 pb-2">{stigNav.map(n=><NavItem key={n.k} item={n}/>)}</div>}
+
+        <div className="border-t border-slate-100 my-1"/>
+
+        {/* O*Net group */}
+        <button onClick={()=>toggleSection("onet")} className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all">
+          {sidebarOpen.onet?<ChevronDown size={12} className="text-slate-400"/>:<ChevronRight size={12} className="text-slate-400"/>}
+          <Users size={14} className="text-cyan-500"/>
+          <span>O*Net</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-100 text-cyan-600 font-bold ml-auto">{ONET_CATALOG.length}</span>
+        </button>
+        {sidebarOpen.onet&&<div className="space-y-0.5 pb-2">{onetNav.map(n=><NavItem key={n.k} item={n}/>)}</div>}
+
+        <div className="border-t border-slate-100 my-1"/>
+
+        {/* Nexus Lexicon */}
+        <button onClick={()=>{toggleSection("nexus");setPage("nexus-lexicon");}} className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-bold transition-all ${page==="nexus-lexicon"?"text-blue-700 bg-blue-50":"text-slate-800 hover:bg-slate-50"}`}>
+          <Database size={14} className="text-emerald-500"/>
+          <span>Nexus Lexicon</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-bold ml-auto">{LEX.length+ONET_LEX.length}</span>
+        </button>
+      </div>
+      {/* Content area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-6xl mx-auto px-6 py-6">
+          {page==="stig-library"&&<LibraryPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="stig-dashboard"&&<DashboardPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="stig-pipeline"&&<PipelinePage nav={setPage}/>}
+          {page==="stig-exceptions"&&<ExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="stig-lexicon"&&<LexiconPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="stig-finding"&&<FindingPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-library"&&<OnetLibraryPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-dashboard"&&<OnetDashboardPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-pipeline"&&<OnetPipelinePage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-exceptions"&&<OnetExceptionsPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-lexicon"&&<OnetLexiconPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="onet-role"&&<OnetRoleDetailPage nav={setPage} isAdmin={isAdmin}/>}
+          {page==="nexus-lexicon"&&<NexusLexiconPage nav={setPage} isAdmin={isAdmin}/>}
+        </div>
+      </div>
     </div>
   </div>);
 }
