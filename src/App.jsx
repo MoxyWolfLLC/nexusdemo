@@ -523,60 +523,181 @@ function FindingPage({nav, isAdmin}) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PAGE 4: LEXICON BROWSER
+// PAGE 4: LEXICON BROWSER (Expanded — Glossary, Dictionary, Thesaurus, Knowledge Graph, Manage)
 // ═══════════════════════════════════════════════════════════════
 
+const PREDICATE_TYPES = {
+  synonym:{label:"Synonym",color:"bg-green-100 text-green-700 border-green-200",icon:"="},
+  antonym:{label:"Antonym",color:"bg-red-100 text-red-700 border-red-200",icon:"≠"},
+  broader:{label:"Broader",color:"bg-blue-100 text-blue-700 border-blue-200",icon:"↑"},
+  narrower:{label:"Narrower",color:"bg-violet-100 text-violet-700 border-violet-200",icon:"↓"},
+  related:{label:"Related",color:"bg-amber-100 text-amber-700 border-amber-200",icon:"↔"},
+  acronym_of:{label:"Acronym Of",color:"bg-cyan-100 text-cyan-700 border-cyan-200",icon:"ABC"},
+  abbreviation_of:{label:"Abbreviation Of",color:"bg-teal-100 text-teal-700 border-teal-200",icon:"Ab"},
+  deprecated_in_favor_of:{label:"Deprecated",color:"bg-slate-100 text-slate-500 border-slate-200",icon:"⊘"},
+};
+
 const LEX = [
-  {id:"lex-001",term:"audit record",status:"validated",pass1:true,pass2:true,freq:67,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Audit & Logging",def:"A chronological record of system activities sufficient to enable reconstruction, review, and examination of the sequence of events surrounding or leading to an operation, procedure, or event.",related:["audit log","audit daemon","audit trail preservation"],cciRefs:["CCI-000130","CCI-000131","CCI-000132"]},
-  {id:"lex-002",term:"audit daemon",status:"validated",pass1:true,pass2:true,freq:42,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Audit & Logging",def:"The background process (auditd) responsible for writing audit records to disk. Critical for maintaining continuous audit coverage per DISA STIG requirements.",related:["audit record","audit log"],cciRefs:["CCI-000135","CCI-000136"]},
-  {id:"lex-003",term:"access control",status:"validated",pass1:true,pass2:true,freq:89,stigs:6,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.88,cat:"Access Management",def:"The process of granting or denying specific requests to obtain and use information and related information processing services.",related:["privileged account","authentication mechanism","account lockout"],cciRefs:["CCI-000213","CCI-000764"]},
-  {id:"lex-004",term:"remote access",status:"validated",pass1:true,pass2:true,freq:34,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Network Security",def:"Access to DOD nonpublic information systems by an authorized user communicating through an external, non-organization-controlled network.",related:["remote access functionality","DOD-approved encryption"],cciRefs:["CCI-001453","CCI-002418"]},
-  {id:"lex-005",term:"information system",status:"validated",pass1:true,pass2:false,freq:112,stigs:8,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.82,cat:"General",def:"A discrete set of information resources organized for the collection, processing, maintenance, use, sharing, dissemination, or disposition of information. Per NIST SP 800-18.",related:["organizational information systems"],cciRefs:["CCI-000366"]},
-  {id:"lex-006",term:"cryptographic module",status:"validated",pass1:true,pass2:true,freq:28,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"The set of hardware, software, and/or firmware that implements approved security functions and is contained within the cryptographic boundary. Validated through FIPS 140-2/140-3.",related:["DOD-approved encryption","FIPS-validated cryptography","disk encryption"],cciRefs:["CCI-002450","CCI-002476"]},
-  {id:"lex-007",term:"kernel module",status:"validated",pass1:true,pass2:true,freq:18,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Dynamically loadable code that extends kernel functionality without reboot. Loading/unloading monitored via init_module, finit_module, and delete_module syscalls.",related:["kernel module loading","system call"],cciRefs:["CCI-000172"]},
-  {id:"lex-008",term:"authentication mechanism",status:"validated",pass1:true,pass2:true,freq:31,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.86,cat:"Access Management",def:"The method used to verify the identity of a user, process, or device as a prerequisite to allowing access to resources in an information system.",related:["account lockout","password complexity","privileged account"],cciRefs:["CCI-000765","CCI-000766"]},
-  {id:"lex-009",term:"account lockout",status:"validated",pass1:true,pass2:true,freq:22,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.93,cat:"Access Management",def:"Security mechanism that disables a user account after a specified number of consecutive failed authentication attempts within a defined time window.",related:["consecutive invalid login attempts","authentication mechanism"],cciRefs:["CCI-000044","CCI-002238"]},
-  {id:"lex-010",term:"password complexity",status:"validated",pass1:true,pass2:false,freq:26,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.84,cat:"Access Management",def:"The measure of effectiveness of a password in resisting attempts at guessing and brute-force attacks based on character composition requirements.",related:["authentication mechanism"],cciRefs:["CCI-000192","CCI-000193","CCI-000194"]},
-  {id:"lex-011",term:"session lock",status:"validated",pass1:true,pass2:true,freq:19,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Access Management",def:"A temporary action that prevents further access to the system by blanking the display or other mechanism while preserving the user session state.",related:["remote access"],cciRefs:["CCI-000056","CCI-000058"]},
-  {id:"lex-012",term:"system call",status:"validated",pass1:true,pass2:true,freq:53,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.81,cat:"Audit & Logging",def:"The programmatic way a process requests service from the kernel. Specific syscalls (open, chmod, chown, etc.) must be audited per STIG requirements.",related:["audit record","kernel module"],cciRefs:["CCI-000172","CCI-000130"]},
-  {id:"lex-013",term:"privileged account",status:"validated",pass1:true,pass2:true,freq:15,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Access Management",def:"An information system account with authorizations of a privileged user — elevated rights that can affect system security posture.",related:["access control","authentication mechanism"],cciRefs:["CCI-000015","CCI-000764"]},
-  {id:"lex-014",term:"network firewall",status:"validated",pass1:true,pass2:true,freq:12,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Network Security",def:"A device or software that monitors and filters incoming and outgoing network traffic based on an organization's previously established security policies.",related:["firewall rules","remote access"],cciRefs:["CCI-002314","CCI-000382"]},
-  {id:"lex-015",term:"disk encryption",status:"validated",pass1:true,pass2:false,freq:8,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.87,cat:"Cryptography",def:"Cryptographic protection of data stored on secondary storage devices to prevent unauthorized access to information at rest.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002476"]},
-  {id:"lex-016",term:"file integrity",status:"validated",pass1:true,pass2:true,freq:14,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Verification that files have not been tampered with by comparing current state against known-good baselines using cryptographic hashes.",related:["audit record","configuration baseline"],cciRefs:["CCI-001744","CCI-002702"]},
-  {id:"lex-017",term:"audit log",status:"validated",pass1:true,pass2:true,freq:38,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.85,cat:"Audit & Logging",def:"The persistent storage of audit records, typically files written by the audit daemon. Must be protected from unauthorized modification or deletion.",related:["audit record","audit daemon"],cciRefs:["CCI-000162","CCI-000163"]},
-  {id:"lex-018",term:"certificate validation",status:"validated",pass1:true,pass2:false,freq:9,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.92,cat:"Cryptography",def:"The process of verifying digital certificate authenticity, revocation status, and trust chain to a recognized Certificate Authority.",related:["cryptographic module"],cciRefs:["CCI-002470"]},
-  {id:"lex-019",term:"kernel module loading",status:"candidate",pass1:true,pass2:false,freq:6,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.78,cat:"System Integrity",def:"The mechanism of dynamically inserting code into the running kernel via init_module or finit_module syscalls. Candidate — under council review.",related:["kernel module","system call"],cciRefs:["CCI-000172"]},
-  {id:"lex-020",term:"consecutive invalid login attempts",status:"contested",pass1:true,pass2:false,freq:11,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.58,cat:"Access Management",def:"A sequence of failed authentication events by the same user without an intervening success. Council split 2-2 on whether this is compositional or a policy-specific MWE.",related:["account lockout","authentication mechanism"],cciRefs:["CCI-000044"]},
-  {id:"lex-021",term:"DOD-approved encryption",status:"contested",pass1:false,pass2:true,freq:14,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.62,cat:"Cryptography",def:"Encryption using cryptographic algorithms validated through the FIPS 140 process and approved by NSA for DOD use. Council split 2-2 on compositional vs. regulatory MWE.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002418","CCI-002421"]},
-  {id:"lex-022",term:"emergency account",status:"candidate",pass1:false,pass2:false,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.52,cat:"Access Management",def:"A temporary user account created under exigent circumstances with a mandatory 72-hour expiration. Candidate term — low frequency, unclear MWE boundary.",related:["privileged account"],cciRefs:["CCI-000016"]},
-  {id:"lex-023",term:"configuration baseline",status:"candidate",pass1:false,pass2:true,freq:7,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.55,cat:"System Integrity",def:"A documented set of specifications for an information system that has been formally reviewed and agreed upon as the basis for further development or change. Candidate — council split.",related:["file integrity"],cciRefs:["CCI-000366"]},
-  {id:"lex-024",term:"remote access functionality",status:"candidate",pass1:false,pass2:true,freq:5,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.74,cat:"Network Security",def:"The set of capabilities enabling users to access systems from external networks. Candidate — may be superset of 'remote access' MWE.",related:["remote access","automatic disconnect capability"],cciRefs:["CCI-001453"]},
-  {id:"lex-025",term:"automatic disconnect capability",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.48,cat:"Network Security",def:"The ability to terminate remote sessions without manual intervention based on policy triggers (time, threat detection). Low frequency — under review.",related:["remote access functionality","remote access"],cciRefs:["CCI-002361"]},
-  {id:"lex-026",term:"indicators of compromise",status:"validated",pass1:true,pass2:true,freq:16,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Threat Detection",def:"Artifacts observed on a network or in an operating system that indicate a computer intrusion with high confidence. Well-established security term (IoCs).",related:["adverse information"],cciRefs:["CCI-002361","CCI-002684"]},
-  {id:"lex-027",term:"firewall rules",status:"validated",pass1:true,pass2:true,freq:10,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"Network Security",def:"The set of conditions and actions that determine how network traffic is filtered — defined declaratively in NixOS via configuration.nix.",related:["network firewall","NixOS declarative configuration"],cciRefs:["CCI-000382"]},
-  {id:"lex-028",term:"NixOS built-in firewall",status:"candidate",pass1:false,pass2:true,freq:2,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.54,cat:"Network Security",def:"The iptables/nftables-based firewall managed declaratively through networking.firewall.enable in NixOS. Platform-specific term — under review.",related:["network firewall","firewall rules","NixOS declarative configuration"],cciRefs:["CCI-002314"]},
-  {id:"lex-029",term:"NixOS declarative configuration",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"NO_TAG",David:"TAG"},conf:0.46,cat:"System Integrity",def:"The functional configuration model used by NixOS where system state is defined in /etc/nixos/configuration.nix. Platform-specific — may not generalize.",related:["configuration baseline","NixOS built-in firewall"],cciRefs:["CCI-000366"]},
-  {id:"lex-030",term:"mission functions",status:"candidate",pass1:false,pass2:true,freq:8,stigs:3,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.38,cat:"General",def:"Organizational operations essential to achieving the mission objective. Very broad term — likely compositional rather than MWE.",related:["organizational information systems"],cciRefs:["CCI-000366"]},
-  {id:"lex-031",term:"organizational information systems",status:"validated",pass1:true,pass2:true,freq:21,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"General",def:"Information systems operated by an organization or on behalf of an organization, including those operated by contractors. Regulatory term of art.",related:["information system","mission functions"],cciRefs:["CCI-000366"]},
-  {id:"lex-032",term:"adverse information",status:"candidate",pass1:false,pass2:true,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.49,cat:"Threat Detection",def:"Information that adversely reflects on the integrity or character of a cleared individual, or data suggesting hostile activity. Under review.",related:["indicators of compromise"],cciRefs:["CCI-002361"]},
-  {id:"lex-033",term:"operating system",status:"validated",pass1:true,pass2:true,freq:98,stigs:8,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.99,cat:"General",def:"System software that manages computer hardware and software resources and provides common services for computer programs.",related:["information system"],cciRefs:["CCI-000366"]},
-  {id:"lex-034",term:"privilege escalation",status:"candidate",pass1:false,pass2:false,freq:7,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.76,cat:"Access Management",def:"The exploitation of a programming error, design flaw, or configuration oversight to gain elevated access to resources normally protected from a user.",related:["privileged account","access control"],cciRefs:["CCI-000015"]},
-  {id:"lex-035",term:"execution control policy",status:"candidate",pass1:false,pass2:false,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.32,cat:"System Integrity",def:"Organizational policy governing which binaries and scripts may execute on a system. Low consensus — likely compositional.",related:["configuration baseline"],cciRefs:["CCI-001774"]},
-  {id:"lex-036",term:"audit trail preservation",status:"candidate",pass1:false,pass2:false,freq:5,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.51,cat:"Audit & Logging",def:"The protection of audit records from unauthorized alteration, deletion, or overwriting. Council split — may overlap with 'audit log' protection.",related:["audit log","audit record"],cciRefs:["CCI-000162","CCI-000163"]},
-  {id:"lex-037",term:"FIPS-validated cryptography",status:"validated",pass1:true,pass2:true,freq:19,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"Cryptographic modules that have been tested and validated against FIPS 140-2 or FIPS 140-3 standards by an accredited Cryptographic Module Testing Laboratory.",related:["cryptographic module","DOD-approved encryption"],cciRefs:["CCI-002450"]},
+  {id:"lex-001",term:"audit record",status:"validated",pass1:true,pass2:true,freq:67,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Audit & Logging",def:"A chronological record of system activities sufficient to enable reconstruction, review, and examination of the sequence of events surrounding or leading to an operation, procedure, or event.",related:["audit log","audit daemon","audit trail preservation"],cciRefs:["CCI-000130","CCI-000131","CCI-000132"],
+    senses:[{sense_number:1,sense_label:"Event Entry",definition:"A single timestamped entry documenting one discrete system event (login, file access, process execution).",framework:"NIST SP 800-92"},{sense_number:2,sense_label:"Compliance Artifact",definition:"The formal evidentiary record required by DISA STIGs to demonstrate audit capability during assessment.",framework:"DISA STIG"}],
+    triples:[{subject:"audit record",predicate:"broader",object:"audit log",type:"hierarchical"},{subject:"audit record",predicate:"related",object:"audit daemon",type:"semantic"},{subject:"audit record",predicate:"narrower",object:"audit trail preservation",type:"hierarchical"}]},
+  {id:"lex-002",term:"audit daemon",status:"validated",pass1:true,pass2:true,freq:42,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Audit & Logging",def:"The background process (auditd) responsible for writing audit records to disk. Critical for maintaining continuous audit coverage per DISA STIG requirements.",related:["audit record","audit log"],cciRefs:["CCI-000135","CCI-000136"],senses:[],triples:[{subject:"audit daemon",predicate:"related",object:"audit record",type:"semantic"},{subject:"audit daemon",predicate:"related",object:"audit log",type:"semantic"}]},
+  {id:"lex-003",term:"access control",status:"validated",pass1:true,pass2:true,freq:89,stigs:6,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.88,cat:"Access Management",def:"The process of granting or denying specific requests to obtain and use information and related information processing services.",related:["privileged account","authentication mechanism","account lockout"],cciRefs:["CCI-000213","CCI-000764"],
+    senses:[{sense_number:1,sense_label:"Physical",definition:"Restricting physical entry to facilities, rooms, or hardware containing information systems.",framework:"NIST SP 800-53 PE"},{sense_number:2,sense_label:"Logical",definition:"Restricting access to system resources, data, and services through authentication and authorization mechanisms.",framework:"NIST SP 800-53 AC"},{sense_number:3,sense_label:"Administrative",definition:"Policies, procedures, and organizational controls governing who may access what resources under what conditions.",framework:"NIST SP 800-53 AC-1"}],
+    triples:[{subject:"access control",predicate:"broader",object:"privileged account",type:"hierarchical"},{subject:"access control",predicate:"related",object:"authentication mechanism",type:"semantic"},{subject:"access control",predicate:"narrower",object:"account lockout",type:"hierarchical"},{subject:"access control",predicate:"related",object:"session lock",type:"semantic"}]},
+  {id:"lex-004",term:"remote access",status:"validated",pass1:true,pass2:true,freq:34,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Network Security",def:"Access to DOD nonpublic information systems by an authorized user communicating through an external, non-organization-controlled network.",related:["remote access functionality","DOD-approved encryption"],cciRefs:["CCI-001453","CCI-002418"],
+    senses:[{sense_number:1,sense_label:"VPN-based",definition:"Remote connectivity established through an encrypted VPN tunnel to the organization's network perimeter.",framework:"NIST SP 800-77"},{sense_number:2,sense_label:"Application-layer",definition:"Remote access to specific applications or services (e.g., SSH, RDP, web portals) without full network tunnel.",framework:"NIST SP 800-46"}],
+    triples:[{subject:"remote access",predicate:"broader",object:"remote access functionality",type:"hierarchical"},{subject:"remote access",predicate:"related",object:"DOD-approved encryption",type:"semantic"},{subject:"remote access",predicate:"related",object:"automatic disconnect capability",type:"semantic"}]},
+  {id:"lex-005",term:"information system",status:"validated",pass1:true,pass2:false,freq:112,stigs:8,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.82,cat:"General",def:"A discrete set of information resources organized for the collection, processing, maintenance, use, sharing, dissemination, or disposition of information. Per NIST SP 800-18.",related:["organizational information systems"],cciRefs:["CCI-000366"],senses:[],triples:[{subject:"information system",predicate:"broader",object:"organizational information systems",type:"hierarchical"},{subject:"information system",predicate:"related",object:"operating system",type:"semantic"}]},
+  {id:"lex-006",term:"cryptographic module",status:"validated",pass1:true,pass2:true,freq:28,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"The set of hardware, software, and/or firmware that implements approved security functions and is contained within the cryptographic boundary. Validated through FIPS 140-2/140-3.",related:["DOD-approved encryption","FIPS-validated cryptography","disk encryption"],cciRefs:["CCI-002450","CCI-002476"],
+    senses:[{sense_number:1,sense_label:"Hardware Module",definition:"A dedicated physical device (HSM, TPM, smartcard) implementing cryptographic functions within a tamper-resistant boundary.",framework:"FIPS 140-3"},{sense_number:2,sense_label:"Software Module",definition:"A software library or application implementing cryptographic algorithms validated against FIPS 140 standards.",framework:"FIPS 140-3"},{sense_number:3,sense_label:"Firmware Module",definition:"Cryptographic functions embedded in device firmware, typically in network appliances or storage controllers.",framework:"FIPS 140-3"}],
+    triples:[{subject:"cryptographic module",predicate:"broader",object:"FIPS-validated cryptography",type:"hierarchical"},{subject:"cryptographic module",predicate:"narrower",object:"disk encryption",type:"hierarchical"},{subject:"cryptographic module",predicate:"related",object:"DOD-approved encryption",type:"semantic"},{subject:"cryptographic module",predicate:"related",object:"certificate validation",type:"semantic"}]},
+  {id:"lex-007",term:"kernel module",status:"validated",pass1:true,pass2:true,freq:18,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Dynamically loadable code that extends kernel functionality without reboot. Loading/unloading monitored via init_module, finit_module, and delete_module syscalls.",related:["kernel module loading","system call"],cciRefs:["CCI-000172"],
+    senses:[{sense_number:1,sense_label:"Device Driver",definition:"A kernel module providing hardware abstraction for a specific device class (network, storage, input).",framework:"Linux Kernel Documentation"},{sense_number:2,sense_label:"Security Extension",definition:"A kernel module implementing mandatory access control or audit subsystem extensions (SELinux, AppArmor).",framework:"DISA STIG"}],
+    triples:[{subject:"kernel module",predicate:"broader",object:"kernel module loading",type:"hierarchical"},{subject:"kernel module",predicate:"related",object:"system call",type:"semantic"},{subject:"kernel module",predicate:"related",object:"file integrity",type:"semantic"}]},
+  {id:"lex-008",term:"authentication mechanism",status:"validated",pass1:true,pass2:true,freq:31,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.86,cat:"Access Management",def:"The method used to verify the identity of a user, process, or device as a prerequisite to allowing access to resources in an information system.",related:["account lockout","password complexity","privileged account"],cciRefs:["CCI-000765","CCI-000766"],senses:[],triples:[{subject:"authentication mechanism",predicate:"related",object:"password complexity",type:"semantic"},{subject:"authentication mechanism",predicate:"narrower",object:"account lockout",type:"hierarchical"}]},
+  {id:"lex-009",term:"account lockout",status:"validated",pass1:true,pass2:true,freq:22,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.93,cat:"Access Management",def:"Security mechanism that disables a user account after a specified number of consecutive failed authentication attempts within a defined time window.",related:["consecutive invalid login attempts","authentication mechanism"],cciRefs:["CCI-000044","CCI-002238"],senses:[],triples:[{subject:"account lockout",predicate:"related",object:"consecutive invalid login attempts",type:"semantic"},{subject:"account lockout",predicate:"broader",object:"authentication mechanism",type:"hierarchical"}]},
+  {id:"lex-010",term:"password complexity",status:"validated",pass1:true,pass2:false,freq:26,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.84,cat:"Access Management",def:"The measure of effectiveness of a password in resisting attempts at guessing and brute-force attacks based on character composition requirements.",related:["authentication mechanism"],cciRefs:["CCI-000192","CCI-000193","CCI-000194"],senses:[],triples:[]},
+  {id:"lex-011",term:"session lock",status:"validated",pass1:true,pass2:true,freq:19,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.95,cat:"Access Management",def:"A temporary action that prevents further access to the system by blanking the display or other mechanism while preserving the user session state.",related:["remote access"],cciRefs:["CCI-000056","CCI-000058"],
+    senses:[{sense_number:1,sense_label:"Inactivity Timeout",definition:"Automatic session lock triggered after a configured period of user inactivity (typically 15 minutes per STIG).",framework:"DISA STIG"},{sense_number:2,sense_label:"User-initiated",definition:"Manual session lock triggered by the user via keyboard shortcut or menu action before leaving the workstation.",framework:"NIST SP 800-53 AC-11"}],
+    triples:[{subject:"session lock",predicate:"related",object:"remote access",type:"semantic"},{subject:"session lock",predicate:"broader",object:"access control",type:"hierarchical"}]},
+  {id:"lex-012",term:"system call",status:"validated",pass1:true,pass2:true,freq:53,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.81,cat:"Audit & Logging",def:"The programmatic way a process requests service from the kernel. Specific syscalls (open, chmod, chown, etc.) must be audited per STIG requirements.",related:["audit record","kernel module"],cciRefs:["CCI-000172","CCI-000130"],
+    senses:[{sense_number:1,sense_label:"File Operations",definition:"Syscalls governing file manipulation: open, close, read, write, chmod, chown, unlink.",framework:"POSIX"},{sense_number:2,sense_label:"Module Operations",definition:"Syscalls for kernel module management: init_module, finit_module, delete_module.",framework:"Linux Kernel"},{sense_number:3,sense_label:"Process Operations",definition:"Syscalls governing process lifecycle: fork, exec, exit, kill, ptrace.",framework:"POSIX"}],
+    triples:[{subject:"system call",predicate:"related",object:"audit record",type:"semantic"},{subject:"system call",predicate:"related",object:"kernel module",type:"semantic"}]},
+  {id:"lex-013",term:"privileged account",status:"validated",pass1:true,pass2:true,freq:15,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.96,cat:"Access Management",def:"An information system account with authorizations of a privileged user — elevated rights that can affect system security posture.",related:["access control","authentication mechanism"],cciRefs:["CCI-000015","CCI-000764"],senses:[],triples:[{subject:"privileged account",predicate:"narrower",object:"access control",type:"hierarchical"},{subject:"privileged account",predicate:"related",object:"privilege escalation",type:"semantic"}]},
+  {id:"lex-014",term:"network firewall",status:"validated",pass1:true,pass2:true,freq:12,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Network Security",def:"A device or software that monitors and filters incoming and outgoing network traffic based on an organization's previously established security policies.",related:["firewall rules","remote access"],cciRefs:["CCI-002314","CCI-000382"],
+    senses:[{sense_number:1,sense_label:"Host-based",definition:"Software firewall running on an individual host (e.g., iptables/nftables on NixOS) filtering traffic to/from that system.",framework:"NIST SP 800-41"},{sense_number:2,sense_label:"Network-based",definition:"Dedicated hardware or virtual appliance positioned at a network boundary to filter traffic between zones.",framework:"NIST SP 800-41"}],
+    triples:[{subject:"network firewall",predicate:"broader",object:"firewall rules",type:"hierarchical"},{subject:"network firewall",predicate:"narrower",object:"NixOS built-in firewall",type:"hierarchical"},{subject:"network firewall",predicate:"related",object:"remote access",type:"semantic"}]},
+  {id:"lex-015",term:"disk encryption",status:"validated",pass1:true,pass2:false,freq:8,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.87,cat:"Cryptography",def:"Cryptographic protection of data stored on secondary storage devices to prevent unauthorized access to information at rest.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002476"],senses:[],triples:[{subject:"disk encryption",predicate:"broader",object:"cryptographic module",type:"hierarchical"}]},
+  {id:"lex-016",term:"file integrity",status:"validated",pass1:true,pass2:true,freq:14,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.94,cat:"System Integrity",def:"Verification that files have not been tampered with by comparing current state against known-good baselines using cryptographic hashes.",related:["audit record","configuration baseline"],cciRefs:["CCI-001744","CCI-002702"],
+    senses:[{sense_number:1,sense_label:"Baseline Comparison",definition:"Comparing file checksums against a known-good baseline to detect unauthorized changes (e.g., AIDE, Tripwire).",framework:"NIST SP 800-53 SI-7"},{sense_number:2,sense_label:"Real-time Monitoring",definition:"Continuous monitoring of file system events to detect modifications as they occur via kernel audit hooks.",framework:"DISA STIG"}],
+    triples:[{subject:"file integrity",predicate:"related",object:"audit record",type:"semantic"},{subject:"file integrity",predicate:"related",object:"configuration baseline",type:"semantic"},{subject:"file integrity",predicate:"related",object:"kernel module",type:"semantic"}]},
+  {id:"lex-017",term:"audit log",status:"validated",pass1:true,pass2:true,freq:38,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.85,cat:"Audit & Logging",def:"The persistent storage of audit records, typically files written by the audit daemon. Must be protected from unauthorized modification or deletion.",related:["audit record","audit daemon"],cciRefs:["CCI-000162","CCI-000163"],senses:[],triples:[{subject:"audit log",predicate:"narrower",object:"audit record",type:"hierarchical"},{subject:"audit log",predicate:"related",object:"audit daemon",type:"semantic"}]},
+  {id:"lex-018",term:"certificate validation",status:"validated",pass1:true,pass2:false,freq:9,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.92,cat:"Cryptography",def:"The process of verifying digital certificate authenticity, revocation status, and trust chain to a recognized Certificate Authority.",related:["cryptographic module"],cciRefs:["CCI-002470"],senses:[],triples:[{subject:"certificate validation",predicate:"related",object:"cryptographic module",type:"semantic"}]},
+  {id:"lex-019",term:"kernel module loading",status:"candidate",pass1:true,pass2:false,freq:6,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.78,cat:"System Integrity",def:"The mechanism of dynamically inserting code into the running kernel via init_module or finit_module syscalls. Candidate — under council review.",related:["kernel module","system call"],cciRefs:["CCI-000172"],senses:[],triples:[{subject:"kernel module loading",predicate:"narrower",object:"kernel module",type:"hierarchical"}]},
+  {id:"lex-020",term:"consecutive invalid login attempts",status:"contested",pass1:true,pass2:false,freq:11,stigs:3,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.58,cat:"Access Management",def:"A sequence of failed authentication events by the same user without an intervening success. Council split 2-2 on whether this is compositional or a policy-specific MWE.",related:["account lockout","authentication mechanism"],cciRefs:["CCI-000044"],senses:[],triples:[]},
+  {id:"lex-021",term:"DOD-approved encryption",status:"contested",pass1:false,pass2:true,freq:14,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.62,cat:"Cryptography",def:"Encryption using cryptographic algorithms validated through the FIPS 140 process and approved by NSA for DOD use. Council split 2-2 on compositional vs. regulatory MWE.",related:["cryptographic module","FIPS-validated cryptography"],cciRefs:["CCI-002418","CCI-002421"],senses:[],triples:[{subject:"DOD-approved encryption",predicate:"synonym",object:"FIPS-validated cryptography",type:"equivalence"}]},
+  {id:"lex-022",term:"emergency account",status:"candidate",pass1:false,pass2:false,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.52,cat:"Access Management",def:"A temporary user account created under exigent circumstances with a mandatory 72-hour expiration. Candidate term — low frequency, unclear MWE boundary.",related:["privileged account"],cciRefs:["CCI-000016"],senses:[],triples:[]},
+  {id:"lex-023",term:"configuration baseline",status:"candidate",pass1:false,pass2:true,freq:7,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.55,cat:"System Integrity",def:"A documented set of specifications for an information system that has been formally reviewed and agreed upon as the basis for further development or change. Candidate — council split.",related:["file integrity"],cciRefs:["CCI-000366"],senses:[],triples:[]},
+  {id:"lex-024",term:"remote access functionality",status:"candidate",pass1:false,pass2:true,freq:5,stigs:1,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.74,cat:"Network Security",def:"The set of capabilities enabling users to access systems from external networks. Candidate — may be superset of 'remote access' MWE.",related:["remote access","automatic disconnect capability"],cciRefs:["CCI-001453"],senses:[],triples:[{subject:"remote access functionality",predicate:"narrower",object:"remote access",type:"hierarchical"}]},
+  {id:"lex-025",term:"automatic disconnect capability",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.48,cat:"Network Security",def:"The ability to terminate remote sessions without manual intervention based on policy triggers (time, threat detection). Low frequency — under review.",related:["remote access functionality","remote access"],cciRefs:["CCI-002361"],senses:[],triples:[]},
+  {id:"lex-026",term:"indicators of compromise",status:"validated",pass1:true,pass2:true,freq:16,stigs:3,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.97,cat:"Threat Detection",def:"Artifacts observed on a network or in an operating system that indicate a computer intrusion with high confidence. Well-established security term (IoCs).",related:["adverse information"],cciRefs:["CCI-002361","CCI-002684"],senses:[],triples:[{subject:"indicators of compromise",predicate:"acronym_of",object:"IoCs",type:"equivalence"},{subject:"indicators of compromise",predicate:"related",object:"adverse information",type:"semantic"}]},
+  {id:"lex-027",term:"firewall rules",status:"validated",pass1:true,pass2:true,freq:10,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"Network Security",def:"The set of conditions and actions that determine how network traffic is filtered — defined declaratively in NixOS via configuration.nix.",related:["network firewall","NixOS declarative configuration"],cciRefs:["CCI-000382"],senses:[],triples:[{subject:"firewall rules",predicate:"narrower",object:"network firewall",type:"hierarchical"}]},
+  {id:"lex-028",term:"NixOS built-in firewall",status:"candidate",pass1:false,pass2:true,freq:2,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.54,cat:"Network Security",def:"The iptables/nftables-based firewall managed declaratively through networking.firewall.enable in NixOS. Platform-specific term — under review.",related:["network firewall","firewall rules","NixOS declarative configuration"],cciRefs:["CCI-002314"],senses:[],triples:[{subject:"NixOS built-in firewall",predicate:"narrower",object:"network firewall",type:"hierarchical"}]},
+  {id:"lex-029",term:"NixOS declarative configuration",status:"candidate",pass1:false,pass2:true,freq:3,stigs:1,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"NO_TAG",David:"TAG"},conf:0.46,cat:"System Integrity",def:"The functional configuration model used by NixOS where system state is defined in /etc/nixos/configuration.nix. Platform-specific — may not generalize.",related:["configuration baseline","NixOS built-in firewall"],cciRefs:["CCI-000366"],senses:[],triples:[]},
+  {id:"lex-030",term:"mission functions",status:"candidate",pass1:false,pass2:true,freq:8,stigs:3,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.38,cat:"General",def:"Organizational operations essential to achieving the mission objective. Very broad term — likely compositional rather than MWE.",related:["organizational information systems"],cciRefs:["CCI-000366"],senses:[],triples:[]},
+  {id:"lex-031",term:"organizational information systems",status:"validated",pass1:true,pass2:true,freq:21,stigs:5,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"NO_TAG"},conf:0.83,cat:"General",def:"Information systems operated by an organization or on behalf of an organization, including those operated by contractors. Regulatory term of art.",related:["information system","mission functions"],cciRefs:["CCI-000366"],senses:[],triples:[{subject:"organizational information systems",predicate:"narrower",object:"information system",type:"hierarchical"}]},
+  {id:"lex-032",term:"adverse information",status:"candidate",pass1:false,pass2:true,freq:4,stigs:1,council:{Alice:"NO_TAG",Bob:"NO_TAG",Clara:"TAG",David:"TAG"},conf:0.49,cat:"Threat Detection",def:"Information that adversely reflects on the integrity or character of a cleared individual, or data suggesting hostile activity. Under review.",related:["indicators of compromise"],cciRefs:["CCI-002361"],senses:[],triples:[]},
+  {id:"lex-033",term:"operating system",status:"validated",pass1:true,pass2:true,freq:98,stigs:8,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.99,cat:"General",def:"System software that manages computer hardware and software resources and provides common services for computer programs.",related:["information system"],cciRefs:["CCI-000366"],senses:[],triples:[{subject:"operating system",predicate:"abbreviation_of",object:"OS",type:"equivalence"},{subject:"operating system",predicate:"narrower",object:"information system",type:"hierarchical"}]},
+  {id:"lex-034",term:"privilege escalation",status:"candidate",pass1:false,pass2:false,freq:7,stigs:2,council:{Alice:"TAG",Bob:"TAG",Clara:"NO_TAG",David:"TAG"},conf:0.76,cat:"Access Management",def:"The exploitation of a programming error, design flaw, or configuration oversight to gain elevated access to resources normally protected from a user.",related:["privileged account","access control"],cciRefs:["CCI-000015"],
+    senses:[{sense_number:1,sense_label:"Vertical",definition:"Gaining higher privilege level than assigned (e.g., regular user to root/admin).",framework:"MITRE ATT&CK"},{sense_number:2,sense_label:"Horizontal",definition:"Accessing resources of another user at the same privilege level without authorization.",framework:"MITRE ATT&CK"}],
+    triples:[{subject:"privilege escalation",predicate:"related",object:"privileged account",type:"semantic"},{subject:"privilege escalation",predicate:"related",object:"access control",type:"semantic"}]},
+  {id:"lex-035",term:"execution control policy",status:"candidate",pass1:false,pass2:false,freq:3,stigs:1,council:{Alice:"NO_TAG",Bob:"TAG",Clara:"NO_TAG",David:"NO_TAG"},conf:0.32,cat:"System Integrity",def:"Organizational policy governing which binaries and scripts may execute on a system. Low consensus — likely compositional.",related:["configuration baseline"],cciRefs:["CCI-001774"],senses:[],triples:[]},
+  {id:"lex-036",term:"audit trail preservation",status:"candidate",pass1:false,pass2:false,freq:5,stigs:2,council:{Alice:"TAG",Bob:"NO_TAG",Clara:"TAG",David:"NO_TAG"},conf:0.51,cat:"Audit & Logging",def:"The protection of audit records from unauthorized alteration, deletion, or overwriting. Council split — may overlap with 'audit log' protection.",related:["audit log","audit record"],cciRefs:["CCI-000162","CCI-000163"],senses:[],triples:[{subject:"audit trail preservation",predicate:"related",object:"audit log",type:"semantic"},{subject:"audit trail preservation",predicate:"narrower",object:"audit record",type:"hierarchical"}]},
+  {id:"lex-037",term:"FIPS-validated cryptography",status:"validated",pass1:true,pass2:true,freq:19,stigs:4,council:{Alice:"TAG",Bob:"TAG",Clara:"TAG",David:"TAG"},conf:0.98,cat:"Cryptography",def:"Cryptographic modules that have been tested and validated against FIPS 140-2 or FIPS 140-3 standards by an accredited Cryptographic Module Testing Laboratory.",related:["cryptographic module","DOD-approved encryption"],cciRefs:["CCI-002450"],senses:[],triples:[{subject:"FIPS-validated cryptography",predicate:"synonym",object:"DOD-approved encryption",type:"equivalence"},{subject:"FIPS-validated cryptography",predicate:"narrower",object:"cryptographic module",type:"hierarchical"}]},
 ];
 
 const LEX_CATS = [...new Set(LEX.map(l=>l.cat))].sort();
 const LEX_VALIDATED = LEX.filter(l=>l.status==="validated").length;
 const LEX_CANDIDATE = LEX.filter(l=>l.status==="candidate").length;
 const LEX_CONTESTED = LEX.filter(l=>l.status==="contested").length;
+const ALL_TRIPLES = LEX.flatMap(l=>l.triples);
+const ALL_SENSES = LEX.filter(l=>l.senses.length>0);
 
+// Mock management queue items
+const SENSE_CONFLICTS = [
+  {id:"sc-1",term:"access control",sense1:{sense_number:2,sense_label:"Logical",proposedBy:"Alice"},sense2:{sense_number:2,sense_label:"Digital/Logical",proposedBy:"Clara"},reason:"Naming disagreement — 'Digital' vs 'Logical' for non-physical access restriction"},
+  {id:"sc-2",term:"cryptographic module",sense1:{sense_number:1,sense_label:"Hardware Module",proposedBy:"Bob"},sense2:{sense_number:1,sense_label:"HSM/Hardware Module",proposedBy:"David"},reason:"Whether to include HSM acronym in the sense label for specificity"},
+];
+const PREDICATE_PROPOSALS = [
+  {id:"pp-1",subject:"audit daemon",predicate:"depends_on",object:"audit log",proposedBy:"Alice",reason:"auditd process depends on writable audit log path — suggests 'depends_on' predicate"},
+  {id:"pp-2",subject:"session lock",predicate:"triggers",object:"audit record",proposedBy:"Bob",reason:"Session lock events should generate audit records — suggests 'triggers' predicate"},
+  {id:"pp-3",subject:"NixOS built-in firewall",predicate:"implemented_by",object:"NixOS declarative configuration",proposedBy:"Clara",reason:"Firewall is configured through NixOS declarations — suggests 'implemented_by' predicate"},
+];
+
+// ── Mini Force Graph ──────────────────────────────────────────
+function ForceGraph({terms, triples, width=540, height=360}) {
+  const svgRef = React.useRef(null);
+  const [nodes, setNodes] = React.useState([]);
+  const [edges, setEdges] = React.useState([]);
+  const [hoveredNode, setHoveredNode] = React.useState(null);
+  const frameRef = React.useRef(null);
+
+  React.useEffect(()=>{
+    // Build unique nodes from triples
+    const nodeMap = new Map();
+    const catColors = {"Audit & Logging":"#6366f1","Access Management":"#f59e0b","Network Security":"#10b981","Cryptography":"#ec4899","System Integrity":"#8b5cf6","Threat Detection":"#ef4444","General":"#64748b"};
+    terms.forEach(t=>{nodeMap.set(t.term,{id:t.term,x:Math.random()*width,y:Math.random()*height,vx:0,vy:0,r:Math.max(6,Math.min(18,t.freq/6)),color:catColors[t.cat]||"#64748b",cat:t.cat});});
+    // Add any nodes from triples not in terms
+    triples.forEach(tr=>{
+      if(!nodeMap.has(tr.subject)){nodeMap.set(tr.subject,{id:tr.subject,x:Math.random()*width,y:Math.random()*height,vx:0,vy:0,r:5,color:"#94a3b8",cat:"External"});}
+      if(!nodeMap.has(tr.object)){nodeMap.set(tr.object,{id:tr.object,x:Math.random()*width,y:Math.random()*height,vx:0,vy:0,r:5,color:"#94a3b8",cat:"External"});}
+    });
+    const ns=[...nodeMap.values()];
+    const es=triples.map((tr,i)=>({id:i,source:tr.subject,target:tr.object,predicate:tr.predicate}));
+    setNodes(ns);
+    setEdges(es);
+
+    // Simple force simulation
+    let running=true;
+    let tick=0;
+    const simulate=()=>{
+      if(!running||tick>200)return;
+      tick++;
+      const alpha=Math.max(0.01,1-tick/200);
+      // Repulsion
+      for(let i=0;i<ns.length;i++){for(let j=i+1;j<ns.length;j++){
+        let dx=ns[j].x-ns[i].x,dy=ns[j].y-ns[i].y;
+        let d=Math.sqrt(dx*dx+dy*dy)||1;
+        let f=alpha*800/(d*d);
+        ns[i].vx-=f*dx/d;ns[i].vy-=f*dy/d;
+        ns[j].vx+=f*dx/d;ns[j].vy+=f*dy/d;
+      }}
+      // Attraction along edges
+      es.forEach(e=>{
+        const s=ns.find(n=>n.id===e.source),t=ns.find(n=>n.id===e.target);
+        if(!s||!t)return;
+        let dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+        let f=alpha*(d-80)*0.05;
+        s.vx+=f*dx/d;s.vy+=f*dy/d;
+        t.vx-=f*dx/d;t.vy-=f*dy/d;
+      });
+      // Center gravity
+      ns.forEach(n=>{
+        n.vx+=(width/2-n.x)*alpha*0.01;
+        n.vy+=(height/2-n.y)*alpha*0.01;
+        n.vx*=0.85;n.vy*=0.85;
+        n.x+=n.vx;n.y+=n.vy;
+        n.x=Math.max(n.r+5,Math.min(width-n.r-5,n.x));
+        n.y=Math.max(n.r+5,Math.min(height-n.r-5,n.y));
+      });
+      setNodes([...ns]);
+      frameRef.current=requestAnimationFrame(simulate);
+    };
+    frameRef.current=requestAnimationFrame(simulate);
+    return()=>{running=false;if(frameRef.current)cancelAnimationFrame(frameRef.current);};
+  },[terms.length,triples.length]);
+
+  return (<svg ref={svgRef} width={width} height={height} className="bg-slate-50 rounded-xl border border-slate-200">
+    <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/></marker></defs>
+    {edges.map(e=>{const s=nodes.find(n=>n.id===e.source),t=nodes.find(n=>n.id===e.target);if(!s||!t)return null;const mx=(s.x+t.x)/2,my=(s.y+t.y)/2;return <g key={e.id}><line x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="#cbd5e1" strokeWidth={1.5} markerEnd="url(#arrowhead)"/><text x={mx} y={my-4} textAnchor="middle" className="text-[8px] fill-slate-400 select-none">{e.predicate}</text></g>})}
+    {nodes.map(n=><g key={n.id} onMouseEnter={()=>setHoveredNode(n.id)} onMouseLeave={()=>setHoveredNode(null)}>
+      <circle cx={n.x} cy={n.y} r={n.r} fill={n.color} opacity={hoveredNode&&hoveredNode!==n.id?0.3:0.85} stroke={hoveredNode===n.id?"#1e293b":"white"} strokeWidth={hoveredNode===n.id?2:1.5} className="transition-opacity cursor-pointer"/>
+      <text x={n.x} y={n.y+n.r+10} textAnchor="middle" className="text-[9px] fill-slate-600 font-medium select-none pointer-events-none">{n.id.length>20?n.id.slice(0,18)+"…":n.id}</text>
+    </g>)}
+  </svg>);
+}
+
+// ── Lexicon Page ──────────────────────────────────────────────
 function LexiconPage({nav, isAdmin}) {
+  const [lexTab,setLexTab]=useState("glossary");
   const [search,setSearch]=useState("");
   const [catFilter,setCatFilter]=useState("all");
   const [statusFilter,setStatusFilter]=useState("all");
   const [sort,setSort]=useState("freq");
   const [expanded,setExpanded]=useState(null);
+  const [selectedTerm,setSelectedTerm]=useState(null);
+  const [predFilter,setPredFilter]=useState("all");
 
   const filtered=useMemo(()=>{
     let r=LEX.filter(l=>{
@@ -592,11 +713,25 @@ function LexiconPage({nav, isAdmin}) {
     return r;
   },[search,catFilter,statusFilter,sort]);
 
+  const filteredTriples=useMemo(()=>{
+    let t=ALL_TRIPLES;
+    if(predFilter!=="all") t=t.filter(tr=>tr.predicate===predFilter);
+    if(search) t=t.filter(tr=>tr.subject.toLowerCase().includes(search.toLowerCase())||tr.object.toLowerCase().includes(search.toLowerCase()));
+    return t;
+  },[predFilter,search]);
+
+  const graphTerms=useMemo(()=>LEX.filter(l=>l.triples.length>0),[]);
+
   const stColor={validated:{bg:"bg-emerald-100",text:"text-emerald-700",border:"border-emerald-200"},candidate:{bg:"bg-amber-100",text:"text-amber-700",border:"border-amber-200"},contested:{bg:"bg-red-100",text:"text-red-700",border:"border-red-200"}};
+
+  const tabs=[{k:"glossary",l:"Glossary",i:BookOpen},{k:"dictionary",l:"Dictionary",i:Layers},{k:"thesaurus",l:"Thesaurus",i:GitBranch},{k:"graph",l:"Knowledge Graph",i:Network}];
+  if(isAdmin) tabs.push({k:"manage",l:"Manage",i:Pencil});
+
+  const selTermData=selectedTerm?LEX.find(l=>l.id===selectedTerm):null;
 
   return (<div className="space-y-5">
     <div className="flex items-center justify-between">
-      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><BookOpen size={18}/>MWE Lexicon</h1><p className="text-xs text-slate-500">Multi-Word Expression dictionary — {LEX.length} terms across {LEX_CATS.length} categories</p></div>
+      <div><h1 className="text-lg font-bold text-slate-900 flex items-center gap-2"><BookOpen size={18}/>MWE Lexicon</h1><p className="text-xs text-slate-500">Multi-Word Expression dictionary — {LEX.length} terms across {LEX_CATS.length} categories • {ALL_SENSES.length} with senses • {ALL_TRIPLES.length} triples</p></div>
     </div>
     {/* Summary cards */}
     <div className="grid grid-cols-4 gap-3">
@@ -605,16 +740,21 @@ function LexiconPage({nav, isAdmin}) {
       <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Plus size={13} className="text-amber-500"/><span className="text-[11px] text-slate-500">Candidates</span></div><div className="text-xl font-bold text-amber-600 tabular-nums">{LEX_CANDIDATE}</div></div>
       <div className="bg-white rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 mb-1"><Scale size={13} className="text-red-500"/><span className="text-[11px] text-slate-500">Contested</span></div><div className="text-xl font-bold text-red-600 tabular-nums">{LEX_CONTESTED}</div></div>
     </div>
-    {/* Filters */}
-    <div className="flex items-center gap-2 flex-wrap">
+    {/* Tab bar */}
+    <div className="flex items-center gap-1 border-b border-slate-200 pb-px">
+      {tabs.map(t=><button key={t.k} onClick={()=>setLexTab(t.k)} className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-all ${lexTab===t.k?"border-blue-500 text-blue-700":"border-transparent text-slate-500 hover:text-slate-700"}`}><t.i size={13}/>{t.l}</button>)}
+    </div>
+    {/* Filters — shared across glossary/dictionary/thesaurus */}
+    {(lexTab==="glossary"||lexTab==="dictionary"||lexTab==="thesaurus")&&<div className="flex items-center gap-2 flex-wrap">
       <div className="relative flex-1 min-w-[180px] max-w-xs"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Search terms or definitions..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
       <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Status</option><option value="validated">Validated ({LEX_VALIDATED})</option><option value="candidate">Candidate ({LEX_CANDIDATE})</option><option value="contested">Contested ({LEX_CONTESTED})</option></select>
       <select value={catFilter} onChange={e=>setCatFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Categories</option>{LEX_CATS.map(c=><option key={c} value={c}>{c}</option>)}</select>
       <select value={sort} onChange={e=>setSort(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="freq">Sort: Frequency</option><option value="conf">Sort: Confidence</option><option value="alpha">Sort: A-Z</option><option value="stigs">Sort: STIG Coverage</option></select>
       <span className="text-[11px] text-slate-400 ml-auto">{filtered.length} terms</span>
-    </div>
-    {/* Term list */}
-    <div className="space-y-2">{filtered.map(l=>{
+    </div>}
+
+    {/* ════════ GLOSSARY VIEW ════════ */}
+    {lexTab==="glossary"&&<div className="space-y-2">{filtered.map(l=>{
       const sc=stColor[l.status];
       const isExp=expanded===l.id;
       const votes=Object.entries(l.council);
@@ -627,6 +767,7 @@ function LexiconPage({nav, isAdmin}) {
                 <span className="text-sm font-semibold text-slate-900 font-mono">{l.term}</span>
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status==="validated"&&<CheckCircle2 size={9}/>}{l.status==="contested"&&<Scale size={9}/>}{l.status==="candidate"&&<Plus size={9}/>}{l.status}</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">{l.cat}</span>
+                {l.senses.length>0&&<span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium">{l.senses.length} senses</span>}
               </div>
               <p className="text-[11px] text-slate-500 line-clamp-1">{l.def}</p>
             </div>
@@ -671,8 +812,202 @@ function LexiconPage({nav, isAdmin}) {
           </div>
         </div>}
       </div>);
-    })}</div>
+    })}
     {filtered.length===0&&<div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Search size={36} className="mx-auto text-slate-300 mb-2"/><h3 className="text-sm font-semibold text-slate-700">No matching terms</h3><p className="text-xs text-slate-500 mt-1">Try adjusting your filters or search query.</p></div>}
+    </div>}
+
+    {/* ════════ DICTIONARY VIEW ════════ */}
+    {lexTab==="dictionary"&&<div className="space-y-3">{filtered.map(l=>{
+      const sc=stColor[l.status];
+      return (<div key={l.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 transition-all">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm font-bold text-slate-900 font-mono">{l.term}</span>
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${sc.bg} ${sc.text} border ${sc.border}`}>{l.status}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">{l.cat}</span>
+          <span className="text-[10px] text-slate-400 ml-auto">{l.freq} hits • {l.stigs} STIGs</span>
+        </div>
+        {/* Primary definition */}
+        <p className="text-xs text-slate-700 leading-relaxed mb-2">{l.def}</p>
+        {/* Senses */}
+        {l.senses.length>0?(<div className="space-y-2 mt-3 pt-3 border-t border-slate-100">
+          <p className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider flex items-center gap-1"><Layers size={10}/>Senses ({l.senses.length})</p>
+          {l.senses.map(s=>(
+            <div key={s.sense_number} className="flex gap-3 pl-2 border-l-2 border-indigo-200">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[11px] font-bold">{s.sense_number}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-xs font-semibold text-slate-800">{s.sense_label}</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-500 font-medium">{s.framework}</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">{s.definition}</p>
+              </div>
+            </div>
+          ))}
+        </div>):(
+          <p className="text-[10px] text-slate-400 italic mt-1">No additional senses defined</p>
+        )}
+      </div>);
+    })}
+    {filtered.length===0&&<div className="bg-white rounded-xl border border-slate-200 py-12 text-center"><Search size={36} className="mx-auto text-slate-300 mb-2"/><h3 className="text-sm font-semibold text-slate-700">No matching terms</h3></div>}
+    </div>}
+
+    {/* ════════ THESAURUS VIEW ════════ */}
+    {lexTab==="thesaurus"&&<div className="grid grid-cols-3 gap-4" style={{minHeight:400}}>
+      {/* Term list */}
+      <div className="col-span-1 space-y-1 overflow-y-auto max-h-[600px] pr-1">
+        <p className="text-[10px] font-semibold text-slate-500 uppercase mb-2 sticky top-0 bg-slate-50 py-1">Terms with relationships ({LEX.filter(l=>l.triples.length>0).length})</p>
+        {filtered.filter(l=>l.triples.length>0).map(l=>(
+          <button key={l.id} onClick={()=>setSelectedTerm(l.id)} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${selectedTerm===l.id?"bg-blue-50 text-blue-700 border border-blue-200":"bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"}`}>
+            <div className="flex items-center justify-between">
+              <span className="font-mono">{l.term}</span>
+              <span className="text-[9px] text-slate-400">{l.triples.length}</span>
+            </div>
+          </button>
+        ))}
+        {filtered.filter(l=>l.triples.length===0).length>0&&<>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase mt-3 mb-1">No relationships yet</p>
+          {filtered.filter(l=>l.triples.length===0).slice(0,8).map(l=>(
+            <div key={l.id} className="px-3 py-1.5 text-[11px] text-slate-400 font-mono">{l.term}</div>
+          ))}
+        </>}
+      </div>
+      {/* Relationship detail */}
+      <div className="col-span-2">
+        {selTermData&&selTermData.triples.length>0?(<div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-bold text-slate-900 font-mono">{selTermData.term}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{selTermData.triples.length} relationships</span>
+          </div>
+          <p className="text-[11px] text-slate-500 mb-3">{selTermData.def}</p>
+          <div className="space-y-2">
+            {Object.entries(PREDICATE_TYPES).map(([pk,pv])=>{
+              const matching=selTermData.triples.filter(t=>t.predicate===pk);
+              if(matching.length===0) return null;
+              return (<div key={pk} className="space-y-1">
+                <div className="flex items-center gap-2"><span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${pv.color}`}><span className="text-[9px]">{pv.icon}</span>{pv.label}</span></div>
+                {matching.map((tr,i)=>(
+                  <div key={i} className="flex items-center gap-2 pl-4 py-1">
+                    <span className="text-[11px] font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{tr.subject}</span>
+                    <ArrowRight size={10} className="text-slate-400 shrink-0"/>
+                    <span className="text-[11px] font-mono text-violet-700 bg-violet-50 px-2 py-0.5 rounded border border-violet-200">{tr.object}</span>
+                    <span className="text-[9px] text-slate-400 ml-1">{tr.type}</span>
+                  </div>
+                ))}
+              </div>);
+            })}
+          </div>
+        </div>):(<div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <GitBranch size={36} className="mx-auto text-slate-300 mb-2"/>
+          <h3 className="text-sm font-semibold text-slate-700">Select a term</h3>
+          <p className="text-xs text-slate-500 mt-1">Choose a term from the left to view its semantic relationships.</p>
+        </div>)}
+      </div>
+    </div>}
+
+    {/* ════════ KNOWLEDGE GRAPH VIEW ════════ */}
+    {lexTab==="graph"&&<div className="space-y-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative flex-1 min-w-[180px] max-w-xs"><Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/><input type="text" placeholder="Filter triples..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+        <select value={predFilter} onChange={e=>setPredFilter(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"><option value="all">All Predicates ({ALL_TRIPLES.length})</option>{Object.entries(PREDICATE_TYPES).map(([k,v])=>{const c=ALL_TRIPLES.filter(t=>t.predicate===k).length;return c>0?<option key={k} value={k}>{v.label} ({c})</option>:null;})}</select>
+        <span className="text-[11px] text-slate-400 ml-auto">{filteredTriples.length} triples</span>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {/* Triple table */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="grid grid-cols-4 gap-px bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
+            <div className="bg-slate-50 px-3 py-2">Subject</div>
+            <div className="bg-slate-50 px-3 py-2">Predicate</div>
+            <div className="bg-slate-50 px-3 py-2">Object</div>
+            <div className="bg-slate-50 px-3 py-2">Type</div>
+          </div>
+          <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100">
+            {filteredTriples.map((tr,i)=>{const pt=PREDICATE_TYPES[tr.predicate];return(
+              <div key={i} className="grid grid-cols-4 gap-px text-[11px] hover:bg-blue-50/50 transition-colors">
+                <div className="px-3 py-1.5 font-mono text-slate-700 truncate">{tr.subject}</div>
+                <div className="px-3 py-1.5">{pt?<span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold border ${pt.color}`}><span>{pt.icon}</span>{pt.label}</span>:<span className="text-slate-500">{tr.predicate}</span>}</div>
+                <div className="px-3 py-1.5 font-mono text-slate-700 truncate">{tr.object}</div>
+                <div className="px-3 py-1.5 text-slate-400">{tr.type}</div>
+              </div>
+            );})}
+          </div>
+        </div>
+        {/* Force graph */}
+        <ForceGraph terms={graphTerms} triples={filteredTriples}/>
+      </div>
+    </div>}
+
+    {/* ════════ MANAGE VIEW (Admin Only) ════════ */}
+    {lexTab==="manage"&&isAdmin&&<div className="space-y-6">
+      {/* Candidate terms */}
+      <div>
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3"><Flag size={14} className="text-amber-500"/>Candidate Terms ({LEX_CANDIDATE})</h2>
+        <div className="space-y-2">{LEX.filter(l=>l.status==="candidate").map(l=>{
+          const votes=Object.entries(l.council);
+          const tagCount=votes.filter(([,v])=>v==="TAG").length;
+          return (<div key={l.id} className="bg-white rounded-xl border border-amber-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-slate-900 font-mono">{l.term}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{l.cat}</span>
+                <CB s={l.conf}/>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5 mr-2">{votes.map(([n,v])=><div key={n} className={`w-4 h-4 rounded-full text-[7px] font-bold flex items-center justify-center ${v==="TAG"?"bg-emerald-400 text-white":"bg-red-300 text-white"}`}>{n[0]}</div>)}<span className="text-[10px] text-slate-500 ml-1">{tagCount}/4</span></div>
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><ThumbsUp size={11}/>Approve</button>
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-medium border border-red-200 flex items-center gap-1"><XCircle size={11}/>Reject</button>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-600">{l.def}</p>
+          </div>);
+        })}</div>
+      </div>
+
+      {/* Sense conflicts */}
+      <div>
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3"><Scale size={14} className="text-violet-500"/>Sense Conflicts ({SENSE_CONFLICTS.length})</h2>
+        <div className="space-y-2">{SENSE_CONFLICTS.map(sc=>(
+          <div key={sc.id} className="bg-white rounded-xl border border-violet-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-slate-900 font-mono">{sc.term}</span>
+                <span className="text-[10px] text-violet-600">Sense #{sc.sense1.sense_number}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium border border-blue-200">Keep "{sc.sense1.sense_label}"</button>
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 font-medium border border-violet-200">Use "{sc.sense2.sense_label}"</button>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-600 mb-2">{sc.reason}</p>
+            <div className="flex items-center gap-4 text-[10px] text-slate-400">
+              <span>Proposed by {sc.sense1.proposedBy} vs {sc.sense2.proposedBy}</span>
+            </div>
+          </div>
+        ))}</div>
+      </div>
+
+      {/* Predicate proposals */}
+      <div>
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3"><GitBranch size={14} className="text-cyan-500"/>Predicate Proposals ({PREDICATE_PROPOSALS.length})</h2>
+        <div className="space-y-2">{PREDICATE_PROPOSALS.map(pp=>(
+          <div key={pp.id} className="bg-white rounded-xl border border-cyan-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{pp.subject}</span>
+                <span className="text-[11px] font-semibold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">{pp.predicate}</span>
+                <ArrowRight size={10} className="text-slate-400"/>
+                <span className="text-[11px] font-mono text-violet-700 bg-violet-50 px-2 py-0.5 rounded border border-violet-200">{pp.object}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium border border-emerald-200 flex items-center gap-1"><ThumbsUp size={11}/>Approve</button>
+                <button className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-medium border border-red-200 flex items-center gap-1"><XCircle size={11}/>Reject</button>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-600">{pp.reason}</p>
+            <span className="text-[10px] text-slate-400 mt-1 block">Proposed by {pp.proposedBy}</span>
+          </div>
+        ))}</div>
+      </div>
+    </div>}
   </div>);
 }
 
