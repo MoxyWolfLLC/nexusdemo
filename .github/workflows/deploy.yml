@@ -23,8 +23,17 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      # Build root Vue app
       - run: npm ci
       - run: npm run build
+      # Build wireframes React app
+      - name: Build wireframes
+        working-directory: wireframes
+        run: |
+          npm install
+          npm run build
+      # Merge wireframes into root dist
+      - run: cp -r wireframes/dist dist/wireframes
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
