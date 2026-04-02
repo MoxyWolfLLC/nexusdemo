@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAMS Wireframes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .container { max-width: 640px; width: 100%; padding: 48px 24px; }
+    h1 { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+    p { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+    .cards { display: flex; flex-direction: column; gap: 16px; }
+    a.card { display: block; padding: 24px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; text-decoration: none; transition: all 0.15s; }
+    a.card:hover { border-color: #9ca3af; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card-title { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 4px; }
+    .card-desc { font-size: 13px; color: #6b7280; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 9999px; margin-left: 8px; vertical-align: middle; }
+    .badge-blue { background: #eff6ff; color: #1d4ed8; }
+    .badge-red { background: #fef2f2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SAMS Wireframes</h1>
+    <p>Interactive prototypes for the reseller client management feature. Click to open.</p>
+    <div class="cards">
+      <a class="card" href="reseller.html">
+        <div class="card-title">Reseller Portal <span class="badge badge-blue">Reseller View</span></div>
+        <div class="card-desc">Dashboard, Clients, Payouts, Reports, Settings — what reseller partners see and use to manage their book of business.</div>
+      </a>
+      <a class="card" href="admin.html">
+        <div class="card-title">Admin Portal <span class="badge badge-red">Super Admin</span></div>
+        <div class="card-desc">Reseller channel management, Direct Customers, Products, Billing — the OpenControls internal operations view.</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
